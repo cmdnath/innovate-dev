@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon id="pluginscript.video.bw-cinema" version="1.0.0" name="BW-Cinema"
+	provider-name="Vineet Gupta">
+	<requires>
+		<import addon="xbmc.gui" version="2.11" />
+	</requires>
+	<extension point="xbmc.python.pluginsource" library="default.py">
+		<provides>video</provides>
+	</extension>
+	<extension point="xbmc.addon.metadata">
+		<summary>XBMC Integration for BWCinema</summary>
+		<description>Provides the ability to stream BWCinema movies using XBMC</description>
+		<platform>all</platform>
+	</extension>
+</addon>
