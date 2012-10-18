@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addons>
-<addon id="pluginscript.video.bw-cinema" version="1.0.0" name="BW-Cinema"
-	provider-name="Vineet Gupta">
+<addon id="pluginscript.video.bw-cinema" version="1.0.0" name="BW-Cinema" provider-name="Vineet">
 	<requires>
 		<import addon="xbmc.gui" version="2.11" />
 	</requires>
@@ -15,8 +14,7 @@
 		<platform>all</platform>
 	</extension>
 </addon>
-<addon id="pluginscript.video.live-tv" version="1.0.0" name="live-indian-tv"
-	provider-name="Vineet Gupta">
+<addon id="pluginscript.video.live-tv" version="1.0.0" name="live-indian-tv" provider-name="Vineet">
 	<requires>
 		<import addon="xbmc.gui" version="2.11" />
 	</requires>

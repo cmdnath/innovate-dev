@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<addon id="pluginscript.video.bw-cinema" version="1.0.0" name="BW-Cinema"
-	provider-name="Vineet Gupta">
+<addon id="pluginscript.video.bw-cinema" version="1.0.0" name="BW-Cinema" provider-name="Vineet">
 	<requires>
 		<import addon="xbmc.gui" version="2.11" />
 	</requires>
