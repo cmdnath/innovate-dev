@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+	<!-- Addon Name -->
+	<string id="30000">BW-Cinema</string>
+	<!-- Settings -->
+	<string id="30100">Username</string>
+	<string id="30110">Password</string>
+	<string id="30120">Debugging (restart script to apply)</string>
+	<string id="30130">Show Recently Added Folder</string>
+    <string id="30140">Number of Movies in Recently Added</string>
+</strings>

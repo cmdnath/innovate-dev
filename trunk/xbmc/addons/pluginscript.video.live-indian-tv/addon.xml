@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon id="pluginscript.video.live-indian-tv" version="1.0.0" name="live-indian-tv"
+	provider-name="Vineet Gupta">
+	<requires>
+		<import addon="xbmc.gui" version="2.11" />
+	</requires>
+	<extension point="xbmc.python.pluginsource" library="default.py">
+		<provides>video</provides>
+	</extension>
+	<extension point="xbmc.addon.metadata">
+		<summary>XBMC Integration for Live Indian TV</summary>
+		<description>Provides the ability to stream Indian Channels using XBMC</description>
+		<platform>all</platform>
+	</extension>
+</addon>
