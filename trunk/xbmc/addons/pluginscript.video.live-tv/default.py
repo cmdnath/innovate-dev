@@ -11,8 +11,8 @@ Change Log :
 import urllib
 import urllib2
 import re
-#import xbmcplugin
-#import xbmcgui
+import xbmcplugin
+import xbmcgui
 
 __script__ = 'Live Indian TV'
 __version__ = '0.1'
@@ -33,7 +33,7 @@ def CATEGORIES(url, name):
 
         for name in match:
                 addDir(name,livetv_url, 3, '')
-        
+		
 def INDEX(url, name):
         name=""+name
         req = urllib2.Request(url)
@@ -43,12 +43,75 @@ def INDEX(url, name):
         response.close()
         match = re.compile('class="widget widget_text"><h3>'+name+'</h3>(.+?)</div></div>', re.DOTALL).findall(link)
         for items in match:
-                match1 = re.compile('<li><span style="font-size: small;"><b> <a href="(.+?)">(.+?)</a>(.+?)</b></span></li>', re.DOTALL).findall(items)
-                for channelurl, name,spc in match1:
-                        addDir(name, channelurl, 4, '')
-                        #print channelurl + " " + name
-                        #getStreamLink(channelurl, name)
+                match1 = re.compile('<span style="font-size: small;">(.+?)<a href="(.+?)">(.+?)</a>(.+?)</span>', re.DOTALL).findall(items)
+                for jnk1, channelurl, name,spc in match1:
+					try:
+							req = urllib2.Request(channelurl)
+							response = urllib2.urlopen(req)
+							link = response.read()
+							response.close()
+
+							match=re.compile('<div class="entry">(.+?)</div></div>', re.DOTALL).findall(link)
+
+							for rawhtml in match:
+								playertype=identifyLink(rawhtml, name)
+							
+							streamLink=getStreamLink(playertype, rawhtml, name)
+							addLink(name.title() + "-" + playertype, streamLink, "")
+					except:
+							pass
+
+def getStreamLink(playertype, rawhtml, name):
+        if playertype=="yocast":
+                return yocast(rawhtml, name)
+		if playertype=="rtmp":
+				return rtmp(rawhtml, name)
+        else:
+                return "None"
         
+def identifyLink(rawhtml, name):
+        match=re.compile("yocast|cast3d", re.DOTALL).findall(rawhtml)
+        if len(match)!=0:
+                playertype="yocast"
+                return playertype
+        match=re.compile("<iframe SRC|<iframe src", re.DOTALL).findall(rawhtml)
+        if len(match)!=0:
+                playertype="iframe"
+                return playertype
+        match=re.compile("rtmp",re.DOTALL).findall(rawhtml)
+        if len(match)!=0:
+                playertype="rtmp"
+                return playertype
+        match=re.compile("application/x-shockwave-flash",re.DOTALL).findall(rawhtml)
+        if len(match)!=0:
+                playertype="application/x-shockwave-flash"
+                return playertype
+        match=re.compile('<iframe name="I5" ', re.DOTALL).findall(rawhtml)
+        if len(match)!=0:
+                playertype="I5"
+                return playertype
+        match=re.compile("www.yupptv.com", re.DOTALL).findall(rawhtml)
+        if len(match)!=0:
+                playertype="yupptv"
+                return playertype
+        match=re.compile("application/x-mplayer2", re.DOTALL).findall(rawhtml)
+        if len(match)!=0:
+                playertype="application/x-mplayer2"
+                return playertype
+        
+def yocast(rawhtml, name):
+        match = re.compile('<script type=\'text/javascript\'>fid=\'(.+?)\'; (.+?) src=\'(.+?)\'>', re.DOTALL).findall(rawhtml)
+        for fid, jnk1, player in match:
+                #print fid, player
+                streamlink="rtmp://31.204.153.32/app playpath=" + fid + " swfUrl=http://www.yocast.tv/player/player-licensed.swf pageUrl=http://www.yocast.tv/embed.php?live="+fid+"&vw=580&vh=400 live=true swfVfy=true"
+        return streamlink
+
+def rtmp(rawhtml, name):
+        match = re.compile('<embed src="(.+?)" (.+?)file=(.+?)"(.+?)</embed>', re.DOTALL).findall(rawhtml)
+        for player, jnk1, rtmp, jnk2 in match:
+                streamlink=rtmp + " swfUrl='"+player+"'"
+        return streamlink
+
 def VIDEOLINKS(url, name, thumbnail, cookie):
         req = urllib2.Request(url)
         req.add_header('User-Agent', user_agent)
