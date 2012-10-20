@@ -11,8 +11,8 @@ Change Log :
 import urllib
 import urllib2
 import re
-import xbmcplugin
-import xbmcgui
+#import xbmcplugin
+#import xbmcgui
 
 __script__ = 'Live Indian TV'
 __version__ = '0.1'
@@ -33,7 +33,6 @@ def CATEGORIES(url, name):
 
         for name in match:
                 addDir(name,livetv_url, 3, '')
-        addLink("Test", 'rtmp://31.204.153.32/app playpath=colorsonqw swfUrl=http://www.yocast.tv/player/player-licensed.swf pageUrl=http://www.yocast.tv/embed.php?live=colorsonqw&vw=580&vh=400 live=true swfVfy=true', "")
         
 def INDEX(url, name):
         name=""+name
@@ -43,13 +42,13 @@ def INDEX(url, name):
         link = response.read()
         response.close()
         match = re.compile('class="widget widget_text"><h3>'+name+'</h3>(.+?)</div></div>', re.DOTALL).findall(link)
-        for url in match:
-                print url
-                #addDir(name, bw_url + '/' + url, 4, bw_url + '/' + thumbnail, cookie)
+        for items in match:
+                match1 = re.compile('<li><span style="font-size: small;"><b> <a href="(.+?)">(.+?)</a>(.+?)</b></span></li>', re.DOTALL).findall(items)
+                for channelurl, name,spc in match1:
+                        addDir(name, channelurl, 4, '')
+                        #print channelurl + " " + name
+                        #getStreamLink(channelurl, name)
         
-                
-
-"""
 def VIDEOLINKS(url, name, thumbnail, cookie):
         req = urllib2.Request(url)
         req.add_header('User-Agent', user_agent)
@@ -68,8 +67,7 @@ def VIDEOLINKS(url, name, thumbnail, cookie):
         response.close()
 
         addLink(name, link, thumbnail)
-
-"""                
+                
 def get_params():
         param = []
         paramstring = sys.argv[2]
@@ -87,9 +85,6 @@ def get_params():
                                 param[splitparams[0]] = splitparams[1]
                                 
         return param
-
-
-
 
 def addLink(name, url, iconimage):
         ok = True
