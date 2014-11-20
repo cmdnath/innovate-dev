@@ -1,5 +1,5 @@
 import xbmc,xbmcaddon,os
-addon_id = 'plugin.video.movie25'
+addon_id = 'plugin.video.movie25-mod'
 selfAddon = xbmcaddon.Addon(id=addon_id)
 # Examples:
 #Commands.append(('Add-on settings','XBMC.RunScript('+xbmc.translatePath('special://home/addons/' + addon_id + '/resources/libs/settings.py')+')'))
