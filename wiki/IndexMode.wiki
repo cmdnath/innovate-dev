@@ -1,5 +1,6 @@
 #Index-Mode definitions
 
+<PRE>
 Index	Mode	desc
 0	*420	Search
 1	*639	All Fav's
