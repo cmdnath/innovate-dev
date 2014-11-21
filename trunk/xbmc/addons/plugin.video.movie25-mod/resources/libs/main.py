@@ -2,7 +2,8 @@ import urllib,re,string,sys,os
 import xbmc, xbmcgui, xbmcaddon, xbmcplugin
 import time,threading
 
-addon_id = 'plugin.video.movie25-mod'
+from resources.libs import settings 
+addon_id = settings.getAddOnID()
 selfAddon = xbmcaddon.Addon(id=addon_id)
 mashpath = selfAddon.getAddonInfo('path')
 
@@ -10,7 +11,7 @@ grab = None
 fav = False
 hostlist = None
 
-Dir = xbmc.translatePath(os.path.join('special://home/addons/plugin.video.movie25-mod', ''))
+Dir = xbmc.translatePath(os.path.join('special://home/addons/'+addon_id, ''))
 datapath = xbmc.translatePath(selfAddon.getAddonInfo('profile'))
 
 ################################################################################ Common Calls ##########################################################################################################
@@ -20,8 +21,8 @@ if selfAddon.getSetting("skin") == "0":
 else:
     art = 'https://raw.github.com/mash2k3/MashupArtwork/master/skins/greenmonster'
     fanartimage=Dir+'fanart.jpg'
-elogo = xbmc.translatePath('special://home/addons/plugin.video.movie25/resources/art/bigx.png')
-slogo = xbmc.translatePath('special://home/addons/plugin.video.movie25/resources/art/smallicon.png')
+elogo = xbmc.translatePath('special://home/addons/'+addon_id+'/resources/art/bigx.png')
+slogo = xbmc.translatePath('special://home/addons/'+addon_id+'/resources/art/smallicon.png')
 
 def removeColoredText(text):
     return re.sub('\[COLOR.*?\[/COLOR\]','',text,re.I|re.DOTALL).strip()
@@ -100,9 +101,9 @@ def addDirX(name,url,mode,iconimage,plot='',fanart='',dur=0,genre='',year='',imd
     else:
         infoLabels={ "Title": name, "Plot": plot, "Duration": dur, "Year": year ,"Genre": genre,"OriginalTitle" : removeColoredText(name) }
     if id != None: infoLabels["count"] = id
-    Commands.append(('Watch History','XBMC.Container.Update(%s?name=None&mode=222&url=None&iconimage=None)'% (sys.argv[0])))
-    Commands.append(("My Fav's",'XBMC.Container.Update(%s?name=None&mode=639&url=None&iconimage=None)'% (sys.argv[0])))
-    Commands.append(('[B][COLOR=FF67cc33]MashUp[/COLOR] Settings[/B]','XBMC.RunScript('+xbmc.translatePath(mashpath + '/resources/libs/settings.py')+')'))
+    #Commands.append(('Watch History','XBMC.Container.Update(%s?name=None&mode=222&url=None&iconimage=None)'% (sys.argv[0])))
+    #Commands.append(("My Fav's",'XBMC.Container.Update(%s?name=None&mode=639&url=None&iconimage=None)'% (sys.argv[0])))
+    #Commands.append(('[B][COLOR=FF67cc33]MashUp[/COLOR] Settings[/B]','XBMC.RunScript('+xbmc.translatePath(mashpath + '/resources/libs/settings.py')+')'))
     if menuItemPos != None:
         for mi in reversed(menuItems):
             Commands.insert(menuItemPos,mi)
@@ -123,6 +124,8 @@ def addLink(name,url,iconimage):
 
 def addPlayc(name,url,mode,iconimage,plot,fanart,dur,genre,year):
     return addDirX(name,url,mode,iconimage,plot,fanart,dur,genre,year,isFolder=0,addToFavs=0)
+def addPlayMs(name,url,mode,iconimage,plot,fanart,dur,genre,year):
+    return addDirX(name,url,mode,iconimage,plot,fanart,dur,genre,year,isFolder=0,fav_t='Misc.',fav_addon_t='Misc.')
 
 def addDirb(name,url,mode,iconimage,fanart):
     return addDirX(name,url,mode,iconimage,'',fanart,addToFavs=0)
@@ -322,7 +325,7 @@ def resolve_url(url,filename = False):
     return resolvers.resolve_url(url,filename)
 
 def ErrorReport(e):
-    elogo = xbmc.translatePath('special://home/addons/plugin.video.movie25-mod/resources/art/bigx.png')
+    elogo = xbmc.translatePath('special://home/addons/'+addon_id+'/resources/art/bigx.png')
     xbmc.executebuiltin("XBMC.Notification([COLOR=FF67cc33]Mash Up Error[/COLOR],"+str(e)+",10000,"+elogo+")")
     xbmc.log('***********Mash Up Error: '+str(e)+'**************', xbmc.LOGERROR)
 
@@ -379,3 +382,51 @@ def refresh_movie(vidtitle,imdb, year=''):
             xbmc.executebuiltin("Container.Refresh")
     else:
         xbmcgui.Dialog().ok('Refresh Results','No matches found')
+
+def updateSearchFile(searchQuery,searchType,defaultValue = '###',searchMsg = ''):
+    addToSearchHistory = True
+    searchpath=os.path.join(datapath,'Search')
+    searchHistoryFile = "SearchHistory25"
+    if not searchMsg: searchMsg = 'Search For Movies' 
+    SearchFile=os.path.join(searchpath,searchHistoryFile)
+    searchQuery=urllib.unquote(searchQuery)
+    if not searchQuery or searchQuery == defaultValue:
+        searchQuery = ''
+        try: os.makedirs(searchpath)
+        except: pass
+        keyb = xbmc.Keyboard('', searchMsg )
+        keyb.doModal()
+        if (keyb.isConfirmed()):
+            searchQuery = keyb.getText()
+        else:
+            xbmcplugin.endOfDirectory(int(sys.argv[1]),False,False)
+            return False
+    else:
+        addToSearchHistory = False
+    searchQuery=urllib.quote(searchQuery)
+    if os.path.exists(SearchFile):
+        searchitems=re.compile('search="([^"]+?)",').findall(open(SearchFile,'r').read())
+        if searchitems.count(searchQuery) > 0: addToSearchHistory = True
+    if addToSearchHistory:
+        if not os.path.exists(SearchFile) and searchQuery != '':
+            open(SearchFile,'w').write('search="%s",'%searchQuery)
+        elif searchQuery != '':
+            open(SearchFile,'a').write('search="%s",'%searchQuery)
+        else: return False
+        searchitems=re.compile('search="([^"]+?)",').findall(open(SearchFile,'r').read())
+        rewriteSearchFile = False
+        if searchitems.count(searchQuery) > 1:
+            searchitems.remove(searchQuery)
+            rewriteSearchFile = True
+        if len(searchitems)>=10:
+            searchitems.remove(searchitems[0])
+            rewriteSearchFile = True
+        if rewriteSearchFile:   
+            os.remove(SearchFile)
+            for searchitem in searchitems:
+                try: open(SearchFile,'a').write('search="%s",'%searchitem)
+                except: pass
+    return searchQuery
+def Clearhistory(path):
+    if os.path.exists(path):
+        os.remove(path)

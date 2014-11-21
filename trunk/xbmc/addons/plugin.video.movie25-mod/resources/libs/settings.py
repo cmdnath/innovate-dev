@@ -7,6 +7,11 @@ selfAddon = xbmcaddon.Addon(id=addon_id)
 #Commands.append(('Add-on settings','XBMC.RunScript('+xbmc.translatePath(mashpath + '/resources/libs/settings.py')+')'))
 # or
 #Commands.append(('[B][COLOR lime]Mash Up[/COLOR] Settings[/B]','XBMC.RunScript('+xbmc.translatePath(mashpath + '/resources/libs/settings.py')+')'))
+
+def getAddOnID():
+    d=addon_id
+    return d
+    
 def getHomeItems():
     d=[]
     for x in range(40): 
@@ -36,32 +41,12 @@ def getRefreshRequiredSettings():
     s.append(selfAddon.getSetting("ddtv_dvdrip"))
     return s
 
-def getAccountSettings():
-    s=[]
-    s.append(selfAddon.getSetting("username"))
-    s.append(selfAddon.getSetting("password"))
-    s.append(selfAddon.getSetting("rlsusername"))
-    s.append(selfAddon.getSetting("rlspassword"))
-    s.append(selfAddon.getSetting("srusername"))
-    s.append(selfAddon.getSetting("srpassword"))
-    s.append(selfAddon.getSetting("ghusername"))
-    s.append(selfAddon.getSetting("ghpassword"))
-    s.append(selfAddon.getSetting("skyusername"))
-    s.append(selfAddon.getSetting("skypassword"))
-    return s
-    
 def openSettings():
     d = getHomeItems()
     s = getRefreshRequiredSettings()
-    a = getAccountSettings()
     selfAddon.openSettings()
     dnew = getHomeItems()
     snew = getRefreshRequiredSettings()
-    anew = getAccountSettings()
-    if a != anew:
-        ClearDir(os.path.join(xbmc.translatePath(selfAddon.getAddonInfo('profile')),'Cookies'))
-        ClearDir(os.path.join(os.path.join(xbmc.translatePath(selfAddon.getAddonInfo('profile')),'Cache'),'Sidereel'))
-        snew = []
     if d != dnew or s != snew:
         ClearDir(os.path.join(xbmc.translatePath(selfAddon.getAddonInfo('profile')),'Temp'))
         xbmc.executebuiltin("XBMC.Container.Refresh")  

@@ -6,6 +6,7 @@
 		<setting id="meta-view-tv" type="bool" label="[B]Metadata (TV Shows)[/B]" default="false"/>
 		<setting id="skin" type="enum" label="[B]Skin[/B]" values="VECTOR TH|GREEN MONSTER" default="0"/>
 		<setting id="groupfavs" type="bool" label="[B]Group Favorites[/B]" default="false"/>
+  		<setting id="whistory" type="bool" label="[B]Watch History[/B]" default="true"/>
    </category>
    
    <category label="Auto View">
@@ -52,6 +53,8 @@
 			<setting id="homeitems_11" type="number" label="     Order" default="110" visible="!eq(-1,false)"/>
 		<setting id="homeitems_12_enabled" type="bool" label="[B]Watch History[/B]" default="true"/>
 			<setting id="homeitems_12" type="number" label="     Order" default="120" visible="!eq(-1,false)"/>
+        <setting id="homeitems_15_enabled" type="bool" label="[B]International[/B]" default="true"/>
+			<setting id="homeitems_15" type="number" label="     Order" default="130" visible="!eq(-1,false)"/>
 		<setting id="homeitems_23_enabled" type="bool" label="[B]Kids Zone[/B]" default="true"/>
 			<setting id="homeitems_23" type="number" label="     Order" default="230" visible="!eq(-1,false)"/>
    </category>

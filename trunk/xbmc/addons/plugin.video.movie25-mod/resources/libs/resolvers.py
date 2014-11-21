@@ -3,10 +3,11 @@ import urllib,urllib2,re,cookielib,string,os
 import xbmc, xbmcgui, xbmcaddon, xbmcplugin
 from t0mm0.common.net import Net as net
 
-addon_id = 'plugin.video.movie25-mod'
+from resources.libs import settings 
+addon_id = settings.getAddOnID()
 selfAddon = xbmcaddon.Addon(id=addon_id)
 datapath = xbmc.translatePath(selfAddon.getAddonInfo('profile'))
-elogo = xbmc.translatePath('special://home/addons/plugin.video.movie25/resources/art/bigx.png')
+elogo = xbmc.translatePath('special://home/addons/'+addon_id+'/resources/art/bigx.png')
 
 class ResolverError(Exception):
     def __init__(self, value, value2):
