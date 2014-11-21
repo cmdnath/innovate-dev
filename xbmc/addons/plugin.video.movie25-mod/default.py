@@ -2,10 +2,6 @@ import xbmc,xbmcgui, xbmcaddon, xbmcplugin
 import urllib,re,string,os,time,threading
 import urllib2
 
-addon_id = 'plugin.video.movie25-mod'
-selfAddon = xbmcaddon.Addon(id=addon_id)
-
-print selfAddon.getAddonInfo('path')
 
 try:
     from resources.libs import main,settings    
@@ -14,6 +10,9 @@ except Exception, e:
     dialog = xbmcgui.Dialog()
     ok=dialog.ok('[B][COLOR=FF67cc33]Movie25-Mod Import Error[/COLOR][/B]','Failed To Import Needed Modules',str(e),'Report missing Module at [COLOR=FF67cc33]https://code.google.com/p/innovate-dev/issues/list[/COLOR] to Fix')
     xbmc.log('Movie25-Mod ERROR - Importing Modules: '+str(e), xbmc.LOGERROR)
+
+addon_id = settings.getAddOnID()
+selfAddon = xbmcaddon.Addon(id=addon_id)
 
 art = main.art
 
@@ -28,7 +27,7 @@ TempPath=os.path.join(main.datapath,'Temp')
 try: os.makedirs(TempPath)
 except: pass
 
-def AtoZ():
+def AtoZ(index):
     main.addDir('0-9','http://www.movie25.so/movies/0-9/',1,art+'/09.png')
     for i in string.ascii_uppercase:
             main.addDir(i,'http://www.movie25.so/movies/'+i.lower()+'/',1,art+'/'+i.lower()+'.png')
@@ -64,22 +63,8 @@ def MAIN():
             main.addDirHome('Watch History','history',222,art+'/whistory.png')
         elif index==14:
             main.addDirHome('International','http://www.movie25.so/',36,art+'/intl.png')
-        elif index==16:
-            main.addDirHome('Live Streams','http://www.movie25.so/',115,art+'/live.png')
-        elif index==17:
-            main.addDirHome('More TV Shows & Movies','http://www.movie25.so/',500,art+'/moretvmovies.png')
-        elif index==18:
-            main.addDirHome('Anime','http://www.movie25.so/',265,art+'/anime.png')
-        elif index==19:
-            main.addDirHome('[COLOR=FF67cc33]VIP[/COLOR]laylists','http://www.movie25.so/',234,art+'/vipp.png')
-        elif index==20:
-            main.addDirHome('Sports','http://www.movie25.so/',43,art+'/sportsec2.png')
-        elif index==21:
-            main.addDirHome('Adventure','http://www.movie25.so/',63,art+'/adv2.png')
         elif index==22:
             main.addDirHome('Kids Zone','http://www.movie25.so/',76,art+'/kidzone2.png')
-        elif index==23:
-            main.addDirHome('Documentaries','http://www.movie25.so/',85,art+'/docsec1.png')
     main.addPlayc('MashUp Settings','http://www.movie25.so/',1999,art+'/MashSettings.png','','','','','')
 
 def GENRE(url,index=False):
@@ -93,7 +78,7 @@ def GENRE(url,index=False):
     main.addDir('Drama','http://www.movie25.so/movies/drama/',1,art+'/dra.png',index=index)
     main.addDir('Family','http://www.movie25.so/movies/family/',1,art+'/fam.png',index=index)
     main.addDir('Fantasy','http://www.movie25.so/movies/fantasy/',1,art+'/fant.png',index=index)
-    main.addDir('History','http://www.movie25.so/movies/history/',1,art+'/his.png',index=index)
+    main.addDir('History','http://www.movie25.so/movies/history/',1,art+'/history.png',index=index)
     main.addDir('Horror','http://www.movie25.so/movies/horror/',1,art+'/hor.png',index=index)
     main.addDir('Music','http://www.movie25.so/movies/music/',1,art+'/mus.png',index=index)
     main.addDir('Musical','http://www.movie25.so/movies/musical/',1,art+'/mucl.png',index=index)
@@ -101,7 +86,7 @@ def GENRE(url,index=False):
     main.addDir('Romance','http://www.movie25.so/movies/romance/',1,art+'/rom.png',index=index)
     main.addDir('Sci-Fi','http://www.movie25.so/movies/sci-fi/',1,art+'/sci.png',index=index)
     main.addDir('Short','http://www.movie25.so/movies/short/',1,art+'/sho.png',index=index)
-    main.addDir('Sport','http://www.movie25.so/movies/sport/',1,art+'/sport.png',index=index)
+    main.addDir('Sport','http://www.movie25.so/movies/sport/',1,art+'/spo.png',index=index)
     main.addDir('Thriller','http://www.movie25.so/movies/thriller/',1,art+'/thr.png',index=index)
     main.addDir('War','http://www.movie25.so/movies/war/',1,art+'/war.png',index=index)
     main.addDir('Western','http://www.movie25.so/movies/western/',1,art+'/west.png',index=index)
@@ -122,6 +107,102 @@ def YEAR(index=False):
     main.addDir('2003','http://www.movie25.so/search.php?year=2003/',8,art+'/2003.png',index=index)
     main.addDir('Enter Year','http://www.movie25.com',23,art+'/enteryear.png',index=index)
     main.VIEWSB()
+def INT():
+    main.addDir('Movies','HindiMovies',15,art+'/folder.png')
+    main.addDir('TV On Demand','TVOnDemand',15,art+'/folder.png')
+    main.addDir('Live TV','Live TV',15,art+'/folder.png')
+
+def getFavorites(section_title = None):
+    from resources.universal import favorites
+    fav = favorites.Favorites(addon_id, sys.argv)
+    
+    if(section_title):
+        fav_items = fav.get_my_favorites(section_title=section_title, item_mode='addon')
+    else:
+        fav_items = fav.get_my_favorites(item_mode='addon')
+    
+    if len(fav_items) > 0:
+    
+        for fav_item in fav_items:
+            if (fav_item['isfolder'] == 'false'):
+                if (fav_item['section_addon_title'] == "iWatchOnline Fav's" or 
+                    fav_item['section_addon_title'] == "Movie Fav's"):
+                    main.addPlayM(fav_item['title'],fav_item['infolabels'].get('item_url',''),  
+                        fav_item['infolabels'].get('item_mode',''), fav_item['image_url'], 
+                        fav_item['infolabels'].get('plot',''), fav_item['fanart_url'],
+                        fav_item['infolabels'].get('duration',''), fav_item['infolabels'].get('genre',''),
+                        fav_item['infolabels'].get('year',''))
+                elif (fav_item['section_addon_title'] == "TV Show Fav's"):
+                    main.addPlayT(fav_item['title'],fav_item['infolabels'].get('item_url',''),  
+                        fav_item['infolabels'].get('item_mode',''), fav_item['image_url'], 
+                        fav_item['infolabels'].get('plot',''), fav_item['fanart_url'],
+                        fav_item['infolabels'].get('duration',''), fav_item['infolabels'].get('genre',''),
+                        fav_item['infolabels'].get('year',''))
+                elif (fav_item['section_addon_title'] == "TV Episode Fav's"):
+                    main.addPlayTE(fav_item['title'],fav_item['infolabels'].get('item_url',''),  
+                        fav_item['infolabels'].get('item_mode',''), fav_item['image_url'], 
+                        fav_item['infolabels'].get('plot',''), fav_item['fanart_url'],
+                        fav_item['infolabels'].get('duration',''), fav_item['infolabels'].get('genre',''),
+                        fav_item['infolabels'].get('year',''))
+                elif (fav_item['section_addon_title'] == "Misc. Fav's"):
+                    main.addPlayMs(fav_item['title'],fav_item['infolabels'].get('item_url',''),  
+                        fav_item['infolabels'].get('item_mode',''), fav_item['image_url'], 
+                        fav_item['infolabels'].get('plot',''), fav_item['fanart_url'],
+                        fav_item['infolabels'].get('duration',''), fav_item['infolabels'].get('genre',''),
+                        fav_item['infolabels'].get('year',''))
+                elif (fav_item['section_addon_title'] == "Live Fav's"):
+                    main.addPlayL(fav_item['title'],fav_item['infolabels'].get('item_url',''),  
+                        fav_item['infolabels'].get('item_mode',''), fav_item['image_url'], 
+                        fav_item['infolabels'].get('plot',''), fav_item['fanart_url'],
+                        fav_item['infolabels'].get('duration',''), fav_item['infolabels'].get('genre',''),
+                        fav_item['infolabels'].get('year',''))
+                elif (fav_item['section_addon_title'] == "Movie25 Fav's"):
+                    main.addInfo(fav_item['title'],fav_item['infolabels'].get('item_url',''),  
+                        fav_item['infolabels'].get('item_mode',''), fav_item['image_url'], 
+                        fav_item['infolabels'].get('genre',''), fav_item['infolabels'].get('year',''))
+            else:
+                if (fav_item['section_addon_title'] == "iWatchOnline Fav's" or 
+                    fav_item['section_addon_title'] == "Movie Fav's"):
+                    main.addDirM(fav_item['title'],fav_item['infolabels'].get('item_url',''),  
+                        fav_item['infolabels'].get('item_mode',''), fav_item['image_url'], 
+                        fav_item['infolabels'].get('plot',''), fav_item['fanart_url'],
+                        fav_item['infolabels'].get('duration',''), fav_item['infolabels'].get('genre',''),
+                        fav_item['infolabels'].get('year',''))
+                elif (fav_item['section_addon_title'] == "TV Show Fav's"):
+                    main.addDirT(fav_item['title'],fav_item['infolabels'].get('item_url',''),  
+                        fav_item['infolabels'].get('item_mode',''), fav_item['image_url'], 
+                        fav_item['infolabels'].get('plot',''), fav_item['fanart_url'],
+                        fav_item['infolabels'].get('duration',''), fav_item['infolabels'].get('genre',''),
+                        fav_item['infolabels'].get('year',''))
+                elif (fav_item['section_addon_title'] == "TV Episode Fav's"):
+                    main.addDirTE(fav_item['title'],fav_item['infolabels'].get('item_url',''),  
+                        fav_item['infolabels'].get('item_mode',''), fav_item['image_url'], 
+                        fav_item['infolabels'].get('plot',''), fav_item['fanart_url'],
+                        fav_item['infolabels'].get('duration',''), fav_item['infolabels'].get('genre',''),
+                        fav_item['infolabels'].get('year',''))
+                elif (fav_item['section_addon_title'] == "Misc. Fav's"):
+                    main.addDirMs(fav_item['title'],fav_item['infolabels'].get('item_url',''),  
+                        fav_item['infolabels'].get('item_mode',''), fav_item['image_url'], 
+                        fav_item['infolabels'].get('plot',''), fav_item['fanart_url'],
+                        fav_item['infolabels'].get('duration',''), fav_item['infolabels'].get('genre',''),
+                        fav_item['infolabels'].get('year',''))
+                elif (fav_item['section_addon_title'] == "Live Fav's"):
+                    main.addDirL(fav_item['title'],fav_item['infolabels'].get('item_url',''),  
+                        fav_item['infolabels'].get('item_mode',''), fav_item['image_url'], 
+                        fav_item['infolabels'].get('plot',''), fav_item['fanart_url'],
+                        fav_item['infolabels'].get('duration',''), fav_item['infolabels'].get('genre',''),
+                        fav_item['infolabels'].get('year',''))
+                elif (fav_item['section_addon_title'] == "Movie25 Fav's"):
+                    main.addInfo(fav_item['title'],fav_item['infolabels'].get('item_url',''),  
+                        fav_item['infolabels'].get('item_mode',''), fav_item['image_url'], 
+                        fav_item['infolabels'].get('genre',''), fav_item['infolabels'].get('year',''))
+    else:
+            xbmc.executebuiltin("XBMC.Notification([B][COLOR=FF67cc33]Mash Up[/COLOR][/B],[B]You Have No Saved Favourites[/B],5000,"")")
+    return
+
+def ListglobalFavALL():
+    getFavorites()
+    xbmcplugin.setContent(int(sys.argv[1]), 'Movies')
 
 def GlobalFav():
     if selfAddon.getSetting("groupfavs") == "true":
@@ -134,6 +215,47 @@ def GlobalFav():
         main.addDir("TV Episode Fav's",'http://www.movie25.so/',651,art+'/fav.png')
         main.addDir("Live Fav's",'http://www.movie25.so/',648,art+'/fav.png')
         main.addDir("Misc. Fav's",'http://www.movie25.so/',650,art+'/fav.png')
+def History():
+    whprofile = xbmc.translatePath(selfAddon.getAddonInfo('profile'))
+    whdb=os.path.join(whprofile,'Universal','watch_history.db')
+    if  os.path.exists(whdb):
+        main.addPlayc('Clear Watch History',whdb,414,art+'/cleahis.png','','','','','')
+    from resources.universal import watchhistory
+    wh = watchhistory.WatchHistory(addon_id)
+    if selfAddon.getSetting("whistory") == "true":
+        history_items = wh.get_my_watch_history()
+        for item in history_items:
+            item_title = item['title']
+            item_url = item['url']
+            item_image = item['image_url']
+            item_fanart = item['fanart_url']
+            item_infolabels = item['infolabels']
+            item_isfolder = item['isfolder']
+            if item_image =='':
+                item_image= art+'/noimage.png'
+            item_title=item_title.replace('[COLOR green]','[COLOR=FF67cc33]')
+            main.addLink(item_title,item_url,item_image)
+    else:
+        dialog = xbmcgui.Dialog()
+        ok=dialog.ok('[B]Mash Up History[/B]', 'Watch history is disabled' ,'To enable go to addon settings','and enable Watch History')
+        history_items = wh.get_my_watch_history()
+        for item in history_items:
+            item_title = item['title']
+            item_url = item['url']
+            item_image = item['image_url']
+            item_fanart = item['fanart_url']
+            item_infolabels = item['infolabels']
+            item_isfolder = item['isfolder']
+            item_title=item_title.replace('[COLOR green]','[COLOR=FF67cc33]')
+            main.addLink(item_title,item_url,item_image)
+def KIDZone(murl):
+    main.addDir('Disney Jr.','djk',107,art+'/disjr.png')
+    #main.addDir('National Geographic Kids','ngk',71,art+'/ngk.png')
+    #main.addDir('WB Kids','wbk',77,art+'/wb.png')
+    #main.addDir('Youtube Kids','wbk',84,art+'/youkids.png')
+    #main.addDir('Staael1982 Animated Movies','https://github.com/Coolstreams/bobbyelvis/raw/master/kids%20%26%20animation.xml',236,art+'/kidzone2.png')
+            
+    main.VIEWSB()
     
 ################################################################################ Modes ##########################################################################################################
 
@@ -228,8 +350,6 @@ elif mode==4:
     from resources.libs import movie25
     print ""+url
     movie25.SEARCH(url,index=index)
-    
-
 elif mode==5:
     from resources.libs import movie25
     print ""+url
@@ -263,5 +383,65 @@ elif mode==11:
 elif mode==23:
     from resources.libs import movie25
     movie25.ENTYEAR(index=index)
+elif mode==36:
+    print ""+url
+    INT()
+elif mode==71:
+    from resources.libs.adventure import nationalgeo
+    print ""+url
+    nationalgeo.NGDir(url)
+elif mode==72:
+    from resources.libs.adventure import nationalgeo
+    print ""+url
+    nationalgeo.LISTNG(url)
+
+elif mode==73:
+    from resources.libs.adventure import nationalgeo
+    print ""+url
+    nationalgeo.LISTNG2(url)
+
+elif mode==74:
+    from resources.libs.adventure import nationalgeo
+    print ""+url
+    nationalgeo.LINKNG(name,url)
+
+elif mode==75:
+    from resources.libs.adventure import nationalgeo
+    print ""+url
+    nationalgeo.LINKNG2(name,url)
+
+elif mode==76:
+    print ""+url
+    KIDZone(url)
+elif mode==107:
+    from resources.libs.kids import disneyjr
+    disneyjr.DISJR()
+        
+elif mode==108:
+    from resources.libs.kids import disneyjr
+    disneyjr.DISJRList(url)
+
+elif mode==109:
+    from resources.libs.kids import disneyjr
+    disneyjr.DISJRList2(url)
+        
+elif mode==110:
+    from resources.libs.kids import disneyjr
+    disneyjr.DISJRLink(name,url,iconimage)       
+elif mode==128:
+    main.Clearhistory(url)
+elif mode==222:
+    print ""+url
+    History()
+
+elif mode==420:
+    from resources.libs import movie25
+    print ""+url
+    movie25.Searchhistory(index=index)
+elif mode==639:
+    print ""+url
+    GlobalFav()
+elif mode == 1999:
+    settings.openSettings()
 
 xbmcplugin.endOfDirectory(int(sys.argv[1]))

@@ -4,7 +4,9 @@ import main
 
 #Mash Up - by Mash2k3 2012.
 
-addon_id = 'plugin.video.movie25-mod'
+from resources.libs import settings 
+addon_id = settings.getAddOnID()
+
 selfAddon = xbmcaddon.Addon(id=addon_id)
 art = main.art
 MainUrl='http://www.movie25.so'
