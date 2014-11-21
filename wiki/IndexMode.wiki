@@ -1,0 +1,21 @@
+#Index-Mode definitions
+
+Index	Mode	desc
+0	*420	Search
+1	*639	All Fav's
+2	*6	A-Z
+3-8	*1	New Releases, Latest Added, Featured Movies, Most Viewed, Most Voted, HD Releases
+9	*2	Genre
+10	*7	By Year
+11	*222	Watch History
+14	*36	International
+22	*76	Kids Zone
+	1999	Mashup Settings
+	*128 	Clear History
+	3	Video Links
+	4	Search-Movie25
+	5	PLAY
+	8	YEARB
+	9	NEXTPAGE
+	10	ListGlobalFav25
+	11	GroupedHosts
