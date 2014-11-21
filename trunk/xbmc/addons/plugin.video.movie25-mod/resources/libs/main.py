@@ -114,14 +114,27 @@ def addDirX(name,url,mode,iconimage,plot='',fanart='',dur=0,genre='',year='',imd
     liz.setProperty('fanart_image', fanart)
     return xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=isFolder)
 
+def addLink(name,url,iconimage):
+    liz=xbmcgui.ListItem(name, iconImage=art+'/link.png', thumbnailImage=iconimage)
+    liz.setInfo( type="Video", infoLabels={ "Title": name } )
+    liz.setProperty('fanart_image', fanartimage)
+    print 'URL :' + url
+    return xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
+
 def addPlayc(name,url,mode,iconimage,plot,fanart,dur,genre,year):
     return addDirX(name,url,mode,iconimage,plot,fanart,dur,genre,year,isFolder=0,addToFavs=0)
+
+def addDirb(name,url,mode,iconimage,fanart):
+    return addDirX(name,url,mode,iconimage,'',fanart,addToFavs=0)
     
 def addDir(name,url,mode,iconimage,plot='',fanart='',index=False):
     return addDirX(name,url,mode,iconimage,plot,fanart,addToFavs=0,replaceItems=False,index=index)
 
 def addDirHome(name,url,mode,iconimage,index=False):
     return addDirX(name,url,mode,iconimage,addToFavs=0,index=index)
+
+def addDown2(name,url,mode,iconimage,fanart):
+    return addDirX(name,url,mode,iconimage,'',fanart,isFolder=0,addToFavs=0,id=id,down=1)
 
 def addInfo(name,url,mode,iconimage,genre,year):
     mi = [('Search Movie25','XBMC.Container.Update(%s?mode=4&url=%s)'% (sys.argv[0],'###'))]
@@ -303,3 +316,66 @@ def setGrab():
     if grab is None:
         from metahandler import metahandlers
         grab = metahandlers.MetaData()
+
+def resolve_url(url,filename = False):
+    import resolvers
+    return resolvers.resolve_url(url,filename)
+
+def ErrorReport(e):
+    elogo = xbmc.translatePath('special://home/addons/plugin.video.movie25-mod/resources/art/bigx.png')
+    xbmc.executebuiltin("XBMC.Notification([COLOR=FF67cc33]Mash Up Error[/COLOR],"+str(e)+",10000,"+elogo+")")
+    xbmc.log('***********Mash Up Error: '+str(e)+'**************', xbmc.LOGERROR)
+
+############################################################################### Playback resume/ mark as watched #################################################################################
+
+def WatchedCallback():
+        xbmc.log('%s: %s' % (selfAddon.addon.getAddonInfo('name'), 'Video completely watched.'), xbmc.LOGNOTICE)
+        videotype='movies'
+        setGrab()
+        grab.change_watched(videotype, name, iconimage, season='', episode='', year='', watched=7)
+        xbmc.executebuiltin("XBMC.Container.Refresh")
+
+def WatchedCallbackwithParams(video_type, title, imdb_id, season, episode, year):
+    print "worked"
+    setGrab()
+    grab.change_watched(video_type, title, imdb_id, season=season, episode=episode, year=year, watched=7)
+    xbmc.executebuiltin("XBMC.Container.Refresh")
+
+def ChangeWatched(imdb_id, videoType, name, season, episode, year='', watched='', refresh=False):
+        setGrab()
+        grab.change_watched(videoType, name, imdb_id, season=season, episode=episode, year=year, watched=watched)
+        xbmc.executebuiltin("XBMC.Container.Refresh")
+
+def refresh_movie(vidtitle,imdb, year=''):
+
+    #global metaget
+    #if not metaget:
+    #    metaget=metahandlers.MetaData()
+    vidtitle = vidtitle.decode("ascii", "ignore")
+    if re.search("^\d+", vidtitle):
+        m = re.search('^(\d+)(.*)', vidtitle)
+        vidtitle = m.group(1) + m.group(2) 
+    else: vidtitle = re.sub("\d+", "", vidtitle)
+    vidtitle=vidtitle.replace('  ','')
+    setGrab()
+    search_meta = grab.search_movies(vidtitle)
+    
+    if search_meta:
+        movie_list = []
+        for movie in search_meta:
+            movie_list.append(movie['title'] + ' (' + str(movie['year']) + ')')
+        dialog = xbmcgui.Dialog()
+        index = dialog.select('Choose', movie_list)
+        
+        if index > -1:
+            new_imdb_id = search_meta[index]['imdb_id']
+            new_tmdb_id = search_meta[index]['tmdb_id']
+            year=search_meta[index]['year']
+
+            meta=grab.update_meta('movie', vidtitle, imdb, '',new_imdb_id,new_tmdb_id,year)
+            
+
+
+            xbmc.executebuiltin("Container.Refresh")
+    else:
+        xbmcgui.Dialog().ok('Refresh Results','No matches found')
