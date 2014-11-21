@@ -339,6 +339,8 @@ def PLAY(name,murl):
     try:
         xbmc.executebuiltin("XBMC.Notification(Please Wait!,Resolving Link,3000)")
         stream_url = main.resolve_url(murl)
+        
+        print 'INDIDE PLAY : ' + stream_url
 
         infoL={'Title': infoLabels['metaName'], 'Plot': infoLabels['plot'], 'Genre': infoLabels['genre']}
         # play with bookmark
