@@ -62,7 +62,7 @@ def MAIN():
         elif index==11:
             main.addDirHome('Watch History','history',222,art+'/whistory.png')
         elif index==14:
-            main.addDirHome('International','http://www.movie25.so/',36,art+'/intl.png')
+            main.addDirHome('International','http://www.desirulez.net',36,art+'/intl.png')
         elif index==22:
             main.addDirHome('Kids Zone','http://www.movie25.so/',76,art+'/kidzone2.png')
     main.addPlayc('MashUp Settings','http://www.movie25.so/',1999,art+'/MashSettings.png','','','','','')
@@ -107,10 +107,29 @@ def YEAR(index=False):
     main.addDir('2003','http://www.movie25.so/search.php?year=2003/',8,art+'/2003.png',index=index)
     main.addDir('Enter Year','http://www.movie25.com',23,art+'/enteryear.png',index=index)
     main.VIEWSB()
-def INT():
-    main.addDir('Movies','HindiMovies',15,art+'/folder.png')
-    main.addDir('TV On Demand','TVOnDemand',15,art+'/folder.png')
-    main.addDir('Live TV','Live TV',15,art+'/folder.png')
+def INT(url):
+    logoBaseURL='http://www.lyngsat-logo.com/logo/tv'
+    main.addDir('Star Plus',url+'/forumdisplay.php?f=42',37,logoBaseURL+'/ss/star_plus.jpg')
+    main.addDir('Zee TV',url+'/forumdisplay.php?f=73',37,logoBaseURL+'/zz/zee_tv.jpg')
+    main.addDir('Zindagi TV',url+'/forumdisplay.php?f=00',37,logoBaseURL+'/zz/zindagi_tv_pk.png')
+    main.addDir('Sony TV',url+'/forumdisplay.php?f=63',37,logoBaseURL+'/ss/set_in.jpg')
+    main.addDir('Sony Pal',url+'/forumdisplay.php?f=00',37,logoBaseURL+'/ss/sony_pal_in.png')
+    main.addDir('Life OK',url+'/forumdisplay.php?f=1375',37,logoBaseURL+'/ll/life_ok_in.jpg')
+    main.addDir('Sahara One',url+'/forumdisplay.php?f=134',37,logoBaseURL+'/ss/sahara_one.jpg')
+    main.addDir('Star Jalsha',url+'/forumdisplay.php?f=667',37,logoBaseURL+'/ss/star_jalsha.jpg')
+    main.addDir('Colors TV',url+'/forumdisplay.php?f=176',37,logoBaseURL+'/cc/colors_in.jpg')
+    main.addDir('Sab TV',url+'/forumdisplay.php?f=254',37,logoBaseURL+'/ss/sony_sab_tv.jpg')
+    main.addDir('Star Pravah',url+'/forumdisplay.php?f=1138',37,logoBaseURL+'/ss/star_pravah.png')
+    main.addDir('Zing TV',url+'/forumdisplay.php?f=00',37,logoBaseURL+'/zz/zee_zing_asia.png')
+    main.addDir('MTV',url+'/forumdisplay.php?f=339',37,logoBaseURL+'/mm/mtv_india.jpg')
+    main.addDir('Channel [V]',url+'/forumdisplay.php?f=633',37,logoBaseURL+'/cc/channel_v_in.jpg')
+    main.addDir('Bindass TV',url+'/forumdisplay.php?f=504',37,logoBaseURL+'/uu/utv_bindass.jpg')
+    main.addDir('UTV Stars',url+'/forumdisplay.php?f=1274',37,logoBaseURL+'/uu/utv_stars.jpg')
+    main.addDir('POGO',url+'/forumdisplay.php?f=500',37,logoBaseURL+'/pp/pogo.jpg')
+    main.addDir('Disney',url+'/forumdisplay.php?f=479',37,logoBaseURL+'/dd/disney_channel_in.jpg')
+    main.addDir('Hungama TV',url+'/forumdisplay.php?f=472',37,logoBaseURL+'/hh/hungama.jpg')
+    main.addDir('Cartoon Network',url+'/forumdisplay.php?f=509',37,logoBaseURL+'/cc/cartoon_network_in.jpg')
+    main.VIEWSB()
 
 def getFavorites(section_title = None):
     from resources.universal import favorites
@@ -385,7 +404,20 @@ elif mode==23:
     movie25.ENTYEAR(index=index)
 elif mode==36:
     print ""+url
-    INT()
+    INT(url)
+elif mode==37:
+    from resources.libs import desitv
+    print ""+url
+    desitv.LISTSHOWS(url)
+elif mode==38: # International LIST EPISODES
+    from resources.libs import desitv
+    print ""+url
+    desitv.LISTEPISODES(name,url)
+elif mode==39: # International LIST EPISODES
+    from resources.libs import desitv
+    print ""+url
+    desitv.VIDEOLINKS(name,url)
+    
 elif mode==71:
     from resources.libs.adventure import nationalgeo
     print ""+url

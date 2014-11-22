@@ -142,6 +142,9 @@ def addDown2(name,url,mode,iconimage,fanart):
 def addInfo(name,url,mode,iconimage,genre,year):
     mi = [('Search Movie25','XBMC.Container.Update(%s?mode=4&url=%s)'% (sys.argv[0],'###'))]
     return addDirX(name,url,mode,iconimage,'','','',genre,year,searchMeta=1,fav_t='Movies',fav_addon_t='Movie',menuItemPos=0,menuItems=mi)
+def addTVInfo(name,url,mode,iconimage,genre,year):
+    mi = [('Search Movie25','XBMC.Container.Update(%s?mode=4&url=%s)'% (sys.argv[0],'###'))]
+    return addDirX(name,url,mode,iconimage,'','','',genre,year,searchMeta=1,fav_t='Movies',fav_addon_t='Movie',menuItemPos=0,menuItems=mi,metaType='Movies')
 
 def formatCast(cast):
     roles = "\n\n"
@@ -257,6 +260,77 @@ def OPENURL(url, mobile = False, q = False, verbose = True, timeout = 10, cookie
         link ='website down'
         if q: q.put(link)
         return link
+
+################################################################################ TV Shows Metahandler ##########################################################################################################
+
+def GETMETAEpiT(mname,thumb,desc):
+        originalName=mname
+        mname = removeColoredText(mname)
+        if selfAddon.getSetting("meta-view-tv") == "true":
+                setGrab()
+                mname = mname.replace('New Episode','').replace('Main Event','').replace('New Episodes','')
+                mname = mname.strip()
+                r = re.findall('(.+?)\ss(\d+)e(\d+)\s',mname + " ",re.I)
+                if not r: r = re.findall('(.+?)\sseason\s(\d+)\sepisode\s(\d+)\s',mname + " ",re.I)
+                if not r: r = re.findall('(.+?)\s(\d+)x(\d+)\s',mname + " ",re.I)
+                if r:
+                    for name,sea,epi in r:
+                        year=''
+                        name=name.replace(' US','').replace(' (US)','').replace(' (us)','').replace(' (uk Series)','').replace(' (UK)','').replace(' UK',' (UK)').replace(' AU','').replace(' AND',' &').replace(' And',' &').replace(' and',' &').replace(' 2013','').replace(' 2011','').replace(' 2012','').replace(' 2010','')
+                        if re.findall('twisted',name,re.I):
+                            year='2013'
+                        if re.findall('the newsroom',name,re.I):
+                            year='2012'
+                        metaq = grab.get_meta('tvshow',name,None,None,year)
+                        imdb=metaq['imdb_id']
+                        tit=metaq['title']
+                        year=metaq['year']
+                        epiname=''
+                else:       
+                    metaq=''
+                    name=mname
+                    epiname=''
+                    sea=0
+                    epi=0
+                    imdb=''
+                    tit=''
+                    year=''
+                meta = grab.get_episode_meta(str(name),imdb, int(sea), int(epi))
+                print "Episode Mode: Name %s Season %s - Episode %s"%(str(name),str(sea),str(epi))
+                infoLabels = {'rating': meta['rating'],'duration': meta['duration'],'genre': meta['genre'],'mpaa':"rated %s"%meta['mpaa'],'premiered':meta['premiered'],
+                      'plot': meta['plot'],'title': meta['title'],'cover_url': meta['cover_url'],'overlay':meta['overlay'],'episode': meta['episode'],
+                              'season': meta['season'],'backdrop_url': meta['backdrop_url']}
+
+                if infoLabels['cover_url']=='':
+                        if metaq!='':
+                            thumb=metaq['cover_url']
+                            infoLabels['cover_url']=thumb
+                           
+                if infoLabels['backdrop_url']=='':
+                        fan=fanartimage
+                        infoLabels['backdrop_url']=fan
+                if infoLabels['cover_url']=='':
+                    if thumb=='':
+                        thumb=art+'/vidicon.png'
+                        infoLabels['cover_url']=thumb
+                    else:
+                        infoLabels['cover_url']=thumb
+                infoLabels['imdb_id']=imdb
+                if meta['overlay'] == 7:
+                   infoLabels['playcount'] = 1
+                else:
+                   infoLabels['playcount'] = 0
+                
+                infoLabels['showtitle']=tit
+                infoLabels['year']=year
+                infoLabels['metaName']=infoLabels['title']
+                infoLabels['title']=originalName
+                   
+        else:
+                fan=fanartimage
+                infoLabels = {'title': originalName,'metaName': mname,'cover_url': thumb,'backdrop_url': fan,'season': '','episode': '','year': '','plot': desc,'genre': '','imdb_id': ''}       
+        
+        return infoLabels
 
 def GETMETAT(mname,genre,fan,thumb,plot='',imdb='',tmdb=''):
     originalName=mname
@@ -430,3 +504,5 @@ def updateSearchFile(searchQuery,searchType,defaultValue = '###',searchMsg = '')
 def Clearhistory(path):
     if os.path.exists(path):
         os.remove(path)
+def removeNonASCII(text):
+    return re.sub(r'[^\x00-\x7F]','-', text)
