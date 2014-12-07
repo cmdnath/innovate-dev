@@ -2,6 +2,8 @@ import urllib,re,string,sys,os
 import xbmc, xbmcgui, xbmcaddon, xbmcplugin
 import time,threading
 
+import pickle
+
 from resources.libs import settings 
 addon_id = settings.getAddOnID()
 selfAddon = xbmcaddon.Addon(id=addon_id)
@@ -58,17 +60,8 @@ def addDirX(name,url,mode,iconimage,plot='',fanart='',dur=0,genre='',year='',imd
         else:
             Commands.append(("[B][COLOR blue]Add[/COLOR][/B] to My Fav's",fav.add_video_item(fname, u, section_title=fav_t, section_addon_title=fav_addon_t+" Fav's", sub_section_title=fav_sub_t, img=iconimage, fanart=fanart, infolabels={'item_mode':mode, 'item_url':url, 'plot':plot,'duration':dur,'genre':genre,'year':year})))
         Commands.append(("[B][COLOR red]Remove[/COLOR][/B] from My Fav's",fav.delete_item(fname, section_title=fav_t, section_addon_title=fav_addon_t+" Fav's", sub_section_title=fav_sub_t)))
-    if down:
-        sysurl = urllib.quote_plus(url)
-        sysname= urllib.quote_plus(name)
-        Commands.append(('Direct Download', 'XBMC.RunPlugin(%s?mode=190&name=%s&url=%s)' % (sys.argv[0], sysname, sysurl)))
-        if selfAddon.getSetting("jdcb") == "true":
-            Commands.append(('Download with jDownloader', 'XBMC.RunPlugin(%s?mode=776&name=%s&url=%s)' % (sys.argv[0], sysname, sysurl)))
-        else:
-            Commands.append(('Copy to Clipboard', 'XBMC.RunPlugin(%s?mode=776&name=%s&url=%s)' % (sys.argv[0], sysname, sysurl)))
-  
+    
     if searchMeta:
-        Commands.append(('[B]Super Search [COLOR=FF67cc33]Me[/COLOR][/B]','XBMC.Container.Update(%s?mode=21&name=%s&url=%s)'% (sys.argv[0], urllib.quote_plus(name),'###')))
         if metaType == 'TV' and selfAddon.getSetting("meta-view-tv") == "true":
             xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
             cname = infoLabels['title']
@@ -96,14 +89,10 @@ def addDirX(name,url,mode,iconimage,plot='',fanart='',dur=0,genre='',year='',imd
             if infoLabels['overlay'] == 6: watched_mark = 'Mark as Watched'
             else: watched_mark = 'Mark as Unwatched'
             Commands.append((watched_mark, 'XBMC.RunPlugin(%s?mode=777&name=%s&url=%s&iconimage=%s)' % (sys.argv[0], cname, 'movie',imdb_id)))
-            Commands.append(('Play Trailer','XBMC.RunPlugin(%s?mode=782&name=%s&url=%s&iconimage=%s)'% (sys.argv[0],cname,'_',imdb_id)))
             Commands.append(('Refresh Metadata', 'XBMC.RunPlugin(%s?mode=778&name=%s&url=%s&iconimage=%s)' % (sys.argv[0], cname, 'movie',imdb_id)))
     else:
         infoLabels={ "Title": name, "Plot": plot, "Duration": dur, "Year": year ,"Genre": genre,"OriginalTitle" : removeColoredText(name) }
     if id != None: infoLabels["count"] = id
-    #Commands.append(('Watch History','XBMC.Container.Update(%s?name=None&mode=222&url=None&iconimage=None)'% (sys.argv[0])))
-    #Commands.append(("My Fav's",'XBMC.Container.Update(%s?name=None&mode=639&url=None&iconimage=None)'% (sys.argv[0])))
-    #Commands.append(('[B][COLOR=FF67cc33]MashUp[/COLOR] Settings[/B]','XBMC.RunScript('+xbmc.translatePath(mashpath + '/resources/libs/settings.py')+')'))
     if menuItemPos != None:
         for mi in reversed(menuItems):
             Commands.insert(menuItemPos,mi)
@@ -119,8 +108,12 @@ def addLink(name,url,iconimage):
     liz=xbmcgui.ListItem(name, iconImage=art+'/link.png', thumbnailImage=iconimage)
     liz.setInfo( type="Video", infoLabels={ "Title": name } )
     liz.setProperty('fanart_image', fanartimage)
-    print 'URL :' + url
     return xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
+    
+def addPlayList(video_source_id, name, items):
+    liz=xbmcgui.ListItem(label='[B]' + name + '[/B]' + ' | ' + 'Source #' + str(video_source_id) + ' | ' + 'Parts = ' + str(len(items)) , iconImage=art+'/vidicon.png', thumbnailImage=art+'/vidicon.png')
+    liz.setProperty('videosList', pickle.dumps(items))
+    return xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url='',listitem=liz, isFolder=False)
 
 def addPlayc(name,url,mode,iconimage,plot,fanart,dur,genre,year):
     return addDirX(name,url,mode,iconimage,plot,fanart,dur,genre,year,isFolder=0,addToFavs=0)
@@ -136,15 +129,12 @@ def addDir(name,url,mode,iconimage,plot='',fanart='',index=False):
 def addDirHome(name,url,mode,iconimage,index=False):
     return addDirX(name,url,mode,iconimage,addToFavs=0,index=index)
 
-def addDown2(name,url,mode,iconimage,fanart):
-    return addDirX(name,url,mode,iconimage,'',fanart,isFolder=0,addToFavs=0,id=id,down=1)
-
 def addInfo(name,url,mode,iconimage,genre,year):
-    mi = [('Search Movie25','XBMC.Container.Update(%s?mode=4&url=%s)'% (sys.argv[0],'###'))]
+    mi = []
     return addDirX(name,url,mode,iconimage,'','','',genre,year,searchMeta=1,fav_t='Movies',fav_addon_t='Movie',menuItemPos=0,menuItems=mi)
 def addTVInfo(name,url,mode,iconimage,genre,year):
     mi = [('Search Movie25','XBMC.Container.Update(%s?mode=4&url=%s)'% (sys.argv[0],'###'))]
-    return addDirX(name,url,mode,iconimage,'','','',genre,year,searchMeta=1,fav_t='Movies',fav_addon_t='Movie',menuItemPos=0,menuItems=mi,metaType='Movies')
+    return addDirX(name,url,mode,iconimage,'','','',genre,year,searchMeta=0,fav_t='Movies',fav_addon_t='Movie',menuItemPos=0,menuItems=mi,metaType='Movies')
 
 def formatCast(cast):
     roles = "\n\n"
