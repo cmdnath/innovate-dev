@@ -3,7 +3,7 @@ import urllib,urllib2,re,cookielib,string,os
 import xbmc, xbmcgui, xbmcaddon, xbmcplugin
 from t0mm0.common.net import Net as net
 
-from resources.libs import settings 
+from resources.libs import settings, main 
 addon_id = settings.getAddOnID()
 selfAddon = xbmcaddon.Addon(id=addon_id)
 datapath = xbmc.translatePath(selfAddon.getAddonInfo('profile'))
@@ -86,6 +86,10 @@ def resolve_url(url, filename = False):
                     try:url=url.split('com/v/')[1]
                     except:url=url.split('com/embed/')[1]
                 stream_url='plugin://plugin.video.youtube/?action=play_video&videoid=' +url
+            elif re.search('(desiserials|tellyserials|serialreview|[a-z]*).tv/',url,re.I) and re.search('dailymotion', filename, flags=re.I):
+                stream_url=resolve_dailymotion(url)
+            elif re.search('(flash.php|fp.php|wire.php)', url, flags=re.I) or (re.search('(desiserials|tellyserials|serialreview|[a-z]*).tv/', url, flags=re.I) and re.search('flash', filename, flags=re.I)):
+                stream_url=resolve_playwire(url)
             else:
                 import urlresolver
                 print "host "+url
@@ -199,7 +203,49 @@ def load_json(data):
                   for line in sys.exc_info():
                         print "%s" % line
       return None
+def getVideoID(url):
+    return re.compile('(id|url|v|si)=(.+?)/').findall(url + '/')[0][1]
 
+def resolve_dailymotion(url):
+    stream_url='http://www.dailymotion.com/embed/video/' + str(getVideoID(url))
+    html = main.OPENURL(stream_url)
+        
+    matchFullHD = re.compile('"stream_h264_hd1080_url":"(.+?)"', re.DOTALL).findall(html)
+    matchHD = re.compile('"stream_h264_hd_url":"(.+?)"', re.DOTALL).findall(html)
+    matchHQ = re.compile('"stream_h264_hq_url":"(.+?)"', re.DOTALL).findall(html)
+    matchSD = re.compile('"stream_h264_url":"(.+?)"', re.DOTALL).findall(html)
+    matchLD = re.compile('"stream_h264_ld_url":"(.+?)"', re.DOTALL).findall(html)
+    dm_LD = None
+    dm_SD = None
+    dm_720 = None
+    dm_1080 = None
+        
+    if matchFullHD:
+        dm_1080 = urllib.unquote_plus(matchFullHD[0]).replace("\\", "")
+    if matchHD:
+        dm_720 = urllib.unquote_plus(matchHD[0]).replace("\\", "")
+    if dm_720 is None and matchHQ:
+        dm_720 = urllib.unquote_plus(matchHQ[0]).replace("\\", "")
+    if matchSD:
+        dm_SD = urllib.unquote_plus(matchSD[0]).replace("\\", "")
+    if matchLD:
+        dm_LD = urllib.unquote_plus(matchLD[0]).replace("\\", "")
+        
+    if dm_LD is not None:
+        stream_url = dm_LD
+    if dm_SD is not None:
+        stream_url = dm_SD
+    if dm_720 is not None:
+        stream_url = dm_720
+    if dm_1080 is not None:
+        stream_url = dm_1080
+    
+    return stream_url
+    
+def resolve_playwire(url):
+    stream_url = 'http://cdn.playwire.com/' + str(getVideoID(url)) + '.json'
+    return stream_url
+    
 def resolve_realdebrid(url):
     try:
         dialog = xbmcgui.DialogProgress()
@@ -470,7 +516,6 @@ def resolve_firedrive(url):
             post_data[name] = value
         post_data['referer'] = url
         html = net().http_POST(url, post_data).content
-        print html
         embed=re.findall('(?sim)href="([^"]+?)">Download file</a>',html)
         if not embed:
             embed=re.findall("(?sim)'(http://dl.firedrive.com/[^']+?)'",html)

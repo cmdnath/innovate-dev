@@ -110,10 +110,12 @@ def addLink(name,url,iconimage):
     liz.setProperty('fanart_image', fanartimage)
     return xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
     
-def addPlayList(video_source_id, name, items):
+def addPlayList(name, url, mode, video_source_id, items, episodeName):
+    u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&index="+str(video_source_id)
     liz=xbmcgui.ListItem(label='[B]' + name + '[/B]' + ' | ' + 'Source #' + str(video_source_id) + ' | ' + 'Parts = ' + str(len(items)) , iconImage=art+'/vidicon.png', thumbnailImage=art+'/vidicon.png')
     liz.setProperty('videosList', pickle.dumps(items))
-    return xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url='',listitem=liz, isFolder=False)
+    liz.setProperty('episodeName',episodeName)
+    return xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz, isFolder=True)
 
 def addPlayc(name,url,mode,iconimage,plot,fanart,dur,genre,year):
     return addDirX(name,url,mode,iconimage,plot,fanart,dur,genre,year,isFolder=0,addToFavs=0)
@@ -133,8 +135,8 @@ def addInfo(name,url,mode,iconimage,genre,year):
     mi = []
     return addDirX(name,url,mode,iconimage,'','','',genre,year,searchMeta=1,fav_t='Movies',fav_addon_t='Movie',menuItemPos=0,menuItems=mi)
 def addTVInfo(name,url,mode,iconimage,genre,year):
-    mi = [('Search Movie25','XBMC.Container.Update(%s?mode=4&url=%s)'% (sys.argv[0],'###'))]
-    return addDirX(name,url,mode,iconimage,'','','',genre,year,searchMeta=0,fav_t='Movies',fav_addon_t='Movie',menuItemPos=0,menuItems=mi,metaType='Movies')
+    mi = []
+    return addDirX(name,url,mode,iconimage,'','','',genre,year,searchMeta=0,fav_t='TV',fav_addon_t='TV',menuItemPos=0,menuItems=mi,metaType='TV')
 
 def formatCast(cast):
     roles = "\n\n"

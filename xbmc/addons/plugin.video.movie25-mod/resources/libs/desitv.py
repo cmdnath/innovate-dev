@@ -14,7 +14,6 @@ MainUrl='http://www.desirulez.net/'
 prettyName='DesiRulez'
 
 def LISTSHOWS(murl,index=False):
-    print 'MRUL : ' + murl
     link=main.OPENURL(murl)
     link=link.replace('\r','').replace('\n','').replace('\t','').replace('&nbsp;','')
     match = re.findall('<div class="titleline"><h2 class="forumtitle"><a href="(.+?)">(.+?)</a></h2></div>',link)
@@ -89,10 +88,21 @@ def VIDEOLINKS(name, url):
     for child in soup.findChildren():
         if (child.name == 'font') and re.search('Links',str(child.getText()),re.IGNORECASE):
                 if len(video_playlist_items) > 0:
-                    main.addPlayList(video_source_id, video_source_name, video_playlist_items)
+                    main.addPlayList(video_source_name, url,40, video_source_id, video_playlist_items, name)
                     video_playlist_items = []
                     video_source_id = video_source_id + 1
                 video_source_name = child.getText()
                 video_source_name = video_source_name.replace('Online','').replace('Links','').replace('Quality','').replace('  ','')
         elif (child.name =='a') and not child.getText() == 'registration' :
-            video_playlist_items.append(child['href'])
+            video_playlist_items.append(str(child['href']))
+            
+def preparevideolink(video_url, video_source):
+    return main.resolve_url(video_url, video_source)
+    
+def PLAY(name, items, episodeName):
+    video_stream_links = []
+    for item in items:
+        video_stream_links.append(preparevideolink(item, name))
+    from resources.universal import playbackengine
+    playbackengine.PlayAllInPL(episodeName, video_stream_links, img='http://fontslogo.com/wp-content/uploads/2013/02/Dailymotion-LOGO.jpg')
+        
