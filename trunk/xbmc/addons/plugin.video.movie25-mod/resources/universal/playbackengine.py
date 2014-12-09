@@ -419,6 +419,18 @@ def PlayInPL(title, url='', img='', fanart='', infolabels=None):
         
     playlist.add(url=item_url, listitem=listitem)
     Player().play(playlist)
+
+def PlayAllInPL(title, url='', img='', fanart='', infolabels=None):  
+    playlist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
+    playlist.clear()    
+    
+    i = 1
+    for item_url in url:
+        listitem = xbmcgui.ListItem(title + 'Part #' + str(i), iconImage=img, thumbnailImage=img)
+        playlist.add(url=item_url, listitem=listitem)
+        i = i + 1
+    player = Player()
+    player.play(playlist)
     
 def Play(resolved_url, addon_id, video_type, title, season, episode, year, watch_percent=0.9, watchedCallback=None, watchedCallbackwithParams=None, imdb_id=None):
     player = Player()    

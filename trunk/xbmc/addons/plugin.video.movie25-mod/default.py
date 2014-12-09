@@ -2,6 +2,7 @@ import xbmc,xbmcgui, xbmcaddon, xbmcplugin
 import urllib,re,string,os,time,threading
 import urllib2
 
+import pickle
 
 try:
     from resources.libs import main,settings    
@@ -15,7 +16,6 @@ addon_id = settings.getAddOnID()
 selfAddon = xbmcaddon.Addon(id=addon_id)
 
 art = main.art
-
 ################################################################################ Directories ##########################################################################################################
 CachePath=os.path.join(main.datapath,'Cache')
 try: os.makedirs(CachePath)
@@ -66,7 +66,7 @@ def MAIN():
         elif index==22:
             main.addDirHome('Kids Zone','http://www.movie25.so/',76,art+'/kidzone2.png')
     main.addPlayc('MashUp Settings','http://www.movie25.so/',1999,art+'/MashSettings.png','','','','','')
-
+    
 def GENRE(url,index=False):
     main.addDir('Action','http://www.movie25.so/movies/action/',1,art+'/act.png',index=index)
     main.addDir('Adventure','http://www.movie25.so/movies/adventure/',1,art+'/adv.png',index=index)
@@ -417,7 +417,11 @@ elif mode==39: # International LIST EPISODES
     from resources.libs import desitv
     print ""+url
     desitv.VIDEOLINKS(name,url)
-    
+elif mode==40: # Play all videos in the list
+    from resources.libs import desitv
+    items = xbmc.getInfoLabel('ListItem.Property("videosList")')
+    if items :
+        desitv.PLAY(name, pickle.loads(items), xbmc.getInfoLabel('ListItem.Property("episodeName")'))
 elif mode==71:
     from resources.libs.adventure import nationalgeo
     print ""+url
