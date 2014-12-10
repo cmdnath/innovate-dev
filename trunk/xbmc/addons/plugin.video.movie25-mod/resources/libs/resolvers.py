@@ -2,6 +2,7 @@
 import urllib,urllib2,re,cookielib,string,os
 import xbmc, xbmcgui, xbmcaddon, xbmcplugin
 from t0mm0.common.net import Net as net
+import urlresolver
 
 from resources.libs import settings, main 
 addon_id = settings.getAddOnID()
@@ -91,7 +92,6 @@ def resolve_url(url, filename = False):
             elif re.search('(flash.php|fp.php|wire.php)', url, flags=re.I) or (re.search('(desiserials|tellyserials|serialreview|[a-z]*).tv/', url, flags=re.I) and re.search('flash', filename, flags=re.I)):
                 stream_url=resolve_playwire(url)
             else:
-                import urlresolver
                 print "host "+url
                 source = urlresolver.HostedMediaFile(url)
                 if source:
@@ -204,46 +204,34 @@ def load_json(data):
                         print "%s" % line
       return None
 def getVideoID(url):
-    return re.compile('(id|url|v|si)=(.+?)/').findall(url + '/')[0][1]
+    return re.compile('(id|url|v|si|data-config)=(.+?)/').findall(url + '/')[0][1]
 
 def resolve_dailymotion(url):
     stream_url='http://www.dailymotion.com/embed/video/' + str(getVideoID(url))
-    html = main.OPENURL(stream_url)
-        
-    matchFullHD = re.compile('"stream_h264_hd1080_url":"(.+?)"', re.DOTALL).findall(html)
-    matchHD = re.compile('"stream_h264_hd_url":"(.+?)"', re.DOTALL).findall(html)
-    matchHQ = re.compile('"stream_h264_hq_url":"(.+?)"', re.DOTALL).findall(html)
-    matchSD = re.compile('"stream_h264_url":"(.+?)"', re.DOTALL).findall(html)
-    matchLD = re.compile('"stream_h264_ld_url":"(.+?)"', re.DOTALL).findall(html)
-    dm_LD = None
-    dm_SD = None
-    dm_720 = None
-    dm_1080 = None
-        
-    if matchFullHD:
-        dm_1080 = urllib.unquote_plus(matchFullHD[0]).replace("\\", "")
-    if matchHD:
-        dm_720 = urllib.unquote_plus(matchHD[0]).replace("\\", "")
-    if dm_720 is None and matchHQ:
-        dm_720 = urllib.unquote_plus(matchHQ[0]).replace("\\", "")
-    if matchSD:
-        dm_SD = urllib.unquote_plus(matchSD[0]).replace("\\", "")
-    if matchLD:
-        dm_LD = urllib.unquote_plus(matchLD[0]).replace("\\", "")
-        
-    if dm_LD is not None:
-        stream_url = dm_LD
-    if dm_SD is not None:
-        stream_url = dm_SD
-    if dm_720 is not None:
-        stream_url = dm_720
-    if dm_1080 is not None:
-        stream_url = dm_1080
-    
+    stream_url = urlresolver.resolve(stream_url)
+    print '>>>>> STREAM URL >>>> ' + stream_url
     return stream_url
     
 def resolve_playwire(url):
-    stream_url = 'http://cdn.playwire.com/' + str(getVideoID(url)) + '.json'
+    #NEED TO FIGURE OUT A WAY TO READ THIS FROM THE SIRE. RIGHT NOW THE URL IS HARDCODED
+    #link = main.OPENURL(url)
+    #match = re.findall('data-config="(.+?)"',link)
+    #stream_url = ''
+    #for dataconfig in match:
+    #    print 'DATA CONFIG >>>>>>>> ' + dataconfig
+    #    stream_url = dataconfig.replace('player.json','manifest.f4m')
+    #    print 'MANIFEST URL >>>>>>>>>>>> ' + stream_url
+    stream_url = 'http://config.playwire.com/12376/videos/v2/'+str(getVideoID(url))+'/manifest.f4m'
+    link = main.OPENURL(stream_url)
+    import xml.etree.ElementTree as ET
+    print link
+    root = ET.fromstring(link)
+    baseURL = root.find('{http://ns.adobe.com/f4m/1.0}baseURL').text
+    mediaurl = root.find('{http://ns.adobe.com/f4m/1.0}media').attrib['url']
+    print baseURL
+    print mediaurl
+    stream_url = baseURL+'/'+mediaurl
+    print '>>>>> STREAM URL >>>> ' + stream_url
     return stream_url
     
 def resolve_realdebrid(url):

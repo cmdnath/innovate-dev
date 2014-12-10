@@ -71,7 +71,16 @@ def LISTEPISODES(tvshowname,url):
     del dialogWait
     xbmcplugin.setContent(int(sys.argv[1]), 'TV Shows')
     main.VIEWS()
-    
+
+def getVideoSourceIcon(source_name):
+    img_url=None
+    if re.search('dailymotion',source_name,flags=re.I):
+        img_url = 'http://fontslogo.com/wp-content/uploads/2013/02/Dailymotion-LOGO.jpg'
+    elif re.search('flash',source_name,flags=re.I):
+        img_url = 'http://www.playwire.com/images/logo.png'
+    elif re.search('cloud',source_name,flags=re.I):
+        img_url = 'http://www.cloudy.ec/img/logo.png'
+    return img_url
 def VIDEOLINKS(name, url):
     video_source_id = 1
     video_source_name = None
@@ -88,7 +97,7 @@ def VIDEOLINKS(name, url):
     for child in soup.findChildren():
         if (child.name == 'font') and re.search('Links',str(child.getText()),re.IGNORECASE):
                 if len(video_playlist_items) > 0:
-                    main.addPlayList(video_source_name, url,40, video_source_id, video_playlist_items, name)
+                    main.addPlayList(video_source_name, url,40, video_source_id, video_playlist_items, name, getVideoSourceIcon(video_source_name))
                     video_playlist_items = []
                     video_source_id = video_source_id + 1
                 video_source_name = child.getText()
@@ -99,10 +108,21 @@ def VIDEOLINKS(name, url):
 def preparevideolink(video_url, video_source):
     return main.resolve_url(video_url, video_source)
     
-def PLAY(name, items, episodeName):
+def PLAY(name, items, episodeName, video_source):
     video_stream_links = []
+    dialog = xbmcgui.DialogProgress()
+    dialog.create('Resolving', 'Resolving Aftershock '+video_source+' Link...')       
+    dialog.update(0)
     for item in items:
         video_stream_links.append(preparevideolink(item, name))
+        dialog.update(100/len(items))
+        if dialog.iscanceled(): return None
+    if dialog.iscanceled(): return None
+    dialog.update(100)
+    dialog.close()
+    del dialog
+    
     from resources.universal import playbackengine
-    playbackengine.PlayAllInPL(episodeName, video_stream_links, img='http://fontslogo.com/wp-content/uploads/2013/02/Dailymotion-LOGO.jpg')
+    if len(video_stream_links) > 0:
+        playbackengine.PlayAllInPL(episodeName, video_stream_links, img=getVideoSourceIcon(video_source))
         
