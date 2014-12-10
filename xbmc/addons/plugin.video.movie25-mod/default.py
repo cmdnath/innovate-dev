@@ -420,8 +420,9 @@ elif mode==39: # International LIST EPISODES
 elif mode==40: # Play all videos in the list
     from resources.libs import desitv
     items = xbmc.getInfoLabel('ListItem.Property("videosList")')
+    video_source = xbmc.getInfoLabel('ListItem.Label')
     if items :
-        desitv.PLAY(name, pickle.loads(items), xbmc.getInfoLabel('ListItem.Property("episodeName")'))
+        desitv.PLAY(name, pickle.loads(items), xbmc.getInfoLabel('ListItem.Property("episodeName")'), video_source)
 elif mode==71:
     from resources.libs.adventure import nationalgeo
     print ""+url

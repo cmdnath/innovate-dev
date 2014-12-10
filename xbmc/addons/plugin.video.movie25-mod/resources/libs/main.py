@@ -110,9 +110,9 @@ def addLink(name,url,iconimage):
     liz.setProperty('fanart_image', fanartimage)
     return xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
     
-def addPlayList(name, url, mode, video_source_id, items, episodeName):
+def addPlayList(name, url, mode, video_source_id, items, episodeName, iconImage):
     u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&index="+str(video_source_id)
-    liz=xbmcgui.ListItem(label='[B]' + name + '[/B]' + ' | ' + 'Source #' + str(video_source_id) + ' | ' + 'Parts = ' + str(len(items)) , iconImage=art+'/vidicon.png', thumbnailImage=art+'/vidicon.png')
+    liz=xbmcgui.ListItem(label='[B]' + name + '[/B]' + ' | ' + 'Source #' + str(video_source_id) + ' | ' + 'Parts = ' + str(len(items)) , iconImage=iconImage, thumbnailImage=iconImage)
     liz.setProperty('videosList', pickle.dumps(items))
     liz.setProperty('episodeName',episodeName)
     return xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz, isFolder=True)
