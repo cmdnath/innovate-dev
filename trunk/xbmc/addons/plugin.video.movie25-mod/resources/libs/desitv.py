@@ -12,8 +12,26 @@ selfAddon = xbmcaddon.Addon(id=addon_id)
 art = main.art
 MainUrl='http://www.desirulez.net/'
 prettyName='DesiRulez'
-
-def LISTSHOWS(murl,index=False):
+def getShowImage(channelName, showName):
+    import simplejson as json
+    baseURL = 'https://ajax.googleapis.com/ajax/services/search/images?v=1.0&q={query}'
+    query = channelName.lower() + ' ' + showName.lower() + ' poster'
+    url = baseURL.format(query=urllib.quote_plus(query))
+    try:
+        link = main.OPENURL(url)
+        results = json.loads(link)['responseData']['results']
+        for image_info in results:
+            iconImage = image_info['unescapedUrl']
+            break
+        if iconImage is not None:
+            return iconImage
+        else:
+            return ''
+    except Exception, e:
+        xbmc.log('Movie25-Mod ERROR - Importing Modules: '+str(e), xbmc.LOGERROR)
+    return ''
+    
+def LISTSHOWS(murl,channel,index=False):
     link=main.OPENURL(murl)
     link=link.replace('\r','').replace('\n','').replace('\t','').replace('&nbsp;','')
     match = re.findall('<div class="titleline"><h2 class="forumtitle"><a href="(.+?)">(.+?)</a></h2></div>',link)
@@ -28,7 +46,7 @@ def LISTSHOWS(murl,index=False):
         if "color" in name:
             name=name.replace('<b><font color=red>','[COLOR red]').replace('</font></b>','[/COLOR]')
             name=name.replace('<b><font color="red">','[COLOR red]').replace('</font></b>','[/COLOR]')
-        main.addTVInfo(name,MainUrl+url,38,'','','')
+        main.addTVInfo(name,MainUrl+url,38,getShowImage(channel,name),'','')
         loadedLinks = loadedLinks + 1
         percent = (loadedLinks * 100)/totalLinks
         remaining_display = 'TV Shows loaded :: [B]'+str(loadedLinks)+' / '+str(totalLinks)+'[/B].'
