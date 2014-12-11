@@ -130,6 +130,8 @@ def addDir(name,url,mode,iconimage,plot='',fanart='',index=False):
 
 def addDirHome(name,url,mode,iconimage,index=False):
     return addDirX(name,url,mode,iconimage,addToFavs=0,index=index)
+def addDown2(name,url,mode,iconimage,fanart):
+    return addDirX(name,url,mode,iconimage,'',fanart,isFolder=0,addToFavs=0,id=id,down=1)
 
 def addInfo(name,url,mode,iconimage,genre,year):
     mi = []
