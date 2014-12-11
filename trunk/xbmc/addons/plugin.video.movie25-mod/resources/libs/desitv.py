@@ -2,6 +2,7 @@ import urllib,re,sys,os
 import xbmc, xbmcgui, xbmcaddon, xbmcplugin
 import main
 import BeautifulSoup
+import simplejson as json
 
 #Mash Up - by Mash2k3 2012.
 
@@ -13,7 +14,6 @@ art = main.art
 MainUrl='http://www.desirulez.net/'
 prettyName='DesiRulez'
 def getShowImage(channelName, showName):
-    import simplejson as json
     baseURL = 'https://ajax.googleapis.com/ajax/services/search/images?v=1.0&q={query}'
     query = channelName.lower() + ' ' + showName.lower() + ' poster'
     url = baseURL.format(query=urllib.quote_plus(query))
@@ -29,40 +29,46 @@ def getShowImage(channelName, showName):
             return ''
     except Exception, e:
         xbmc.log('Movie25-Mod ERROR - Importing Modules: '+str(e), xbmc.LOGERROR)
+        return getShowImage(channelName, showName)
     return ''
     
 def LISTSHOWS(murl,channel,index=False):
     link=main.OPENURL(murl)
     link=link.replace('\r','').replace('\n','').replace('\t','').replace('&nbsp;','')
     match = re.findall('<div class="titleline"><h2 class="forumtitle"><a href="(.+?)">(.+?)</a></h2></div>',link)
+    label='TV Shows'
+    if not len(match) > 0:
+        match = re.findall('<h3 class="threadtitle">.+?<a class=".+?" href="(.+?)" id=".+?">(.+?)</a></h3>', link)
+        label = 'Movies'
     dialogWait = xbmcgui.DialogProgress()
-    ret = dialogWait.create('Please wait until TV Show list is cached.')
+    ret = dialogWait.create('Please wait until ' + label + ' Show list is cached.')
     totalLinks = len(match)
     loadedLinks = 0
-    remaining_display = 'TV Shows loaded :: [B]'+str(loadedLinks)+' / '+str(totalLinks)+'[/B].'
+    remaining_display = label + ' loaded :: [B]'+str(loadedLinks)+' / '+str(totalLinks)+'[/B].'
     dialogWait.update(0, '[B]Will load instantly from now on[/B]',remaining_display)
     xbmc.executebuiltin("XBMC.Dialog.Close(busydialog,true)")
     for url,name in match:
         if "color" in name:
             name=name.replace('<b><font color=red>','[COLOR red]').replace('</font></b>','[/COLOR]')
             name=name.replace('<b><font color="red">','[COLOR red]').replace('</font></b>','[/COLOR]')
-        main.addTVInfo(name,MainUrl+url,38,getShowImage(channel,name),'','')
+        if label == 'Movies':
+            main.addDirX(name, MainUrl+url,39,'',searchMeta=True, metaType='Movies')
+        else:
+            main.addTVInfo(name,MainUrl+url,38,getShowImage(channel,name),'','')
         loadedLinks = loadedLinks + 1
         percent = (loadedLinks * 100)/totalLinks
-        remaining_display = 'TV Shows loaded :: [B]'+str(loadedLinks)+' / '+str(totalLinks)+'[/B].'
+        remaining_display = label + ' loaded :: [B]'+str(loadedLinks)+' / '+str(totalLinks)+'[/B].'
         dialogWait.update(percent,'[B]Will load instantly from now on[/B]',remaining_display)
         if dialogWait.iscanceled(): return False   
     dialogWait.close()
     del dialogWait
-    xbmcplugin.setContent(int(sys.argv[1]), 'TV Shows')
+    xbmcplugin.setContent(int(sys.argv[1]), label)
     main.VIEWS()
 
 def LISTEPISODES(tvshowname,url):
     link=main.OPENURL(url)
     link=link.replace('\r','').replace('\n','').replace('\t','').replace('&nbsp;','')
-    match = re.findall('<a class="title threadtitle_unread" href="(.+?)" id=".+?">(.+?)</a>',link)
-    if not match:
-        match = re.findall('<a class="title" href="(.+?)" id=".+?">(.+?)</a>',link)
+    match = re.findall('<a class=".+?" href="(.+?)" id=".+?">(.+?)</a>',link)
     dialogWait = xbmcgui.DialogProgress()
     ret = dialogWait.create('Please wait until ['+tvshowname+'] Episodes are cached.')
     totalLinks = len(match)
@@ -98,6 +104,14 @@ def getVideoSourceIcon(source_name):
         img_url = 'http://www.playwire.com/images/logo.png'
     elif re.search('cloud',source_name,flags=re.I):
         img_url = 'http://www.cloudy.ec/img/logo.png'
+    elif re.search('videohut',source_name,flags=re.I):
+        img_url = 'http://thumbs.videohut.to//logo/5.jpg'
+    elif re.search('vidto',source_name,flags=re.I):
+        img_url = 'http://static.vidto.me/static/images/header-logo.png'
+    elif re.search('video tanker',source_name,flags=re.I):
+        img_url = 'http://videotanker.co/styles/cbv2new/images/dot.gif'
+    elif re.search('videoweed',source_name,flags=re.I):
+        img_url = 'http://www.videoweed.es/images/logo.png'
     return img_url
 def VIDEOLINKS(name, url):
     video_source_id = 1
@@ -107,22 +121,23 @@ def VIDEOLINKS(name, url):
     link=main.OPENURL(url)
     link=link.replace('\r','').replace('\n','').replace('\t','').replace('&nbsp;','')
     soup = BeautifulSoup.BeautifulSoup(link).findAll('blockquote', {'class':re.compile(r'\bpostcontent\b')})[0]
+    
     for e in soup.findAll('br'):
         e.extract()
-        
     if soup.has_key('div'):
         soup = soup.findChild('div', recursive=False)
+    
     for child in soup.findChildren():
-        if (child.name == 'font') and re.search('Links',str(child.getText()),re.IGNORECASE):
+        if (child.name == 'font') and re.search('Links|Online',str(child.getText()),re.IGNORECASE):
                 if len(video_playlist_items) > 0:
                     main.addPlayList(video_source_name, url,40, video_source_id, video_playlist_items, name, getVideoSourceIcon(video_source_name))
                     video_playlist_items = []
                     video_source_id = video_source_id + 1
                 video_source_name = child.getText()
-                video_source_name = video_source_name.replace('Online','').replace('Links','').replace('Quality','').replace('  ','')
+                video_source_name = video_source_name.replace('Online','').replace('Links','').replace('Quality','').replace('Watch','').replace('-','').replace('  ','')
         elif (child.name =='a') and not child.getText() == 'registration' :
             video_playlist_items.append(str(child['href']))
-            
+    
 def preparevideolink(video_url, video_source):
     return main.resolve_url(video_url, video_source)
     
@@ -131,9 +146,12 @@ def PLAY(name, items, episodeName, video_source):
     dialog = xbmcgui.DialogProgress()
     dialog.create('Resolving', 'Resolving Aftershock '+video_source+' Link...')       
     dialog.update(0)
+    index = 0
+    
     for item in items:
         video_stream_links.append(preparevideolink(item, name))
-        dialog.update(100/len(items))
+        dialog.update((100/len(items))*index)
+        index = index+1
         if dialog.iscanceled(): return None
     if dialog.iscanceled(): return None
     dialog.update(100)

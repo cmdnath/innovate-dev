@@ -109,6 +109,7 @@ def YEAR(index=False):
     main.VIEWSB()
 def INT(url):
     logoBaseURL='http://www.lyngsat-logo.com/logo/tv'
+    main.addDir('Hindi Movies',url+'/forums/20-Latest-Exclusive-Movie-HQ',37,art+'/Movies.jpeg')
     main.addDir('Star Plus',url+'/forumdisplay.php?f=42',37,logoBaseURL+'/ss/star_plus.jpg')
     main.addDir('Zee TV',url+'/forumdisplay.php?f=73',37,logoBaseURL+'/zz/zee_tv.jpg')
     main.addDir('Zindagi TV',url+'/forumdisplay.php?f=00',37,logoBaseURL+'/zz/zindagi_tv_pk.png')

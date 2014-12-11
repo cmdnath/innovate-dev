@@ -25,7 +25,6 @@ def resolve_url(url, filename = False):
             match = re.search('xoxv(.+?)xoxe(.+?)xoxc',url)
             print "host "+url
             if(match):
-                import urlresolver
                 source = urlresolver.HostedMediaFile(host=match.group(1), media_id=match.group(2))
                 if source:
                     stream_url = source.resolve()
@@ -35,8 +34,6 @@ def resolve_url(url, filename = False):
                 stream_url=resolve_180upload(url)
             elif re.search('veehd',url,re.I):
                 stream_url=resolve_veehd(url)
-            elif re.search('vidto',url,re.I):
-                stream_url=resolve_vidto(url)
             elif re.search('epicshare',url,re.I):
                 stream_url=resolve_epicshare(url)
             elif re.search('lemuploads',url,re.I):
@@ -89,8 +86,18 @@ def resolve_url(url, filename = False):
                 stream_url='plugin://plugin.video.youtube/?action=play_video&videoid=' +url
             elif re.search('(desiserials|tellyserials|serialreview|[a-z]*).tv/',url,re.I) and re.search('dailymotion', filename, flags=re.I):
                 stream_url=resolve_dailymotion(url)
-            elif re.search('(flash.php|fp.php|wire.php)', url, flags=re.I) or (re.search('(desiserials|tellyserials|serialreview|[a-z]*).tv/', url, flags=re.I) and re.search('flash', filename, flags=re.I)):
+            elif re.search('(flash.php|fp.php|wire.php|pw.php)', url, flags=re.I) or (re.search('(desiserials|tellyserials|serialreview|[a-z]*).tv/', url, flags=re.I) and re.search('flash', filename, flags=re.I)):
                 stream_url=resolve_playwire(url)
+            elif re.search('tellynews.tv|vh.php',url,flags=re.I) and re.search('videohut',filename,flags=re.I):
+                stream_url=resolve_videohut(url)
+            elif re.search('vidto.php',url,flags=re.I):
+                stream_url=resolve_vidtophp(url)
+            elif re.search('tellynews.tv|vt.php',url,flags=re.I) and re.search('tanker',filename,flags=re.I):
+                stream_url=resolve_videotanker(url)
+            elif re.search('cloud|cl.php',url,flags=re.I):
+                stream_url=resolve_cloud(url)
+            elif re.search('weed|vw.php',url,flags=re.I):
+                stream_url=resolve_weed(url)
             else:
                 print "host "+url
                 source = urlresolver.HostedMediaFile(url)
@@ -205,11 +212,43 @@ def load_json(data):
       return None
 def getVideoID(url):
     return re.compile('(id|url|v|si|data-config)=(.+?)/').findall(url + '/')[0][1]
+def resolve_vidtophp(url):
+    video_id = getVideoID(url)
+    if not video_id :
+        stream_url = resolve_vidto(url)
+    else:
+        stream_url = 'http://vidto.me/'+video_id+'.html'
+        stream_url = urlresolver.resolve(stream_url)
+    print '>>>>> STREAM URL(vidto) >>>> ' + str(stream_url)
+    return stream_url
+def resolve_weed(url):
+    stream_url='http://www.videoweed.es/file/' + str(getVideoID(url))
+    stream_url = urlresolver.resolve(stream_url)
+    print '>>>>> STREAM URL(videoweed) >>>> ' + str(stream_url)
+    return stream_url
 
+def resolve_cloud(url):
+    stream_url='http://www.cloudy.ec/embed.php?id=' + str(getVideoID(url))
+    stream_url = urlresolver.resolve(stream_url)
+    print '>>>>> STREAM URL(cloud_EC) >>>> ' + str(stream_url)
+    return stream_url
+
+def resolve_videotanker(url):
+    stream_url='http://videotanker.co/player/embed_player.php?vid=' + str(getVideoID(url))
+    stream_url = urlresolver.resolve(stream_url)
+    print '>>>>> STREAM URL(videotanker) >>>> ' + str(stream_url)
+    return stream_url
+
+def resolve_videohut(url):
+    stream_url='http://www.videohut.to/embed.php?id=' + str(getVideoID(url))
+    stream_url = urlresolver.resolve(stream_url)
+    print '>>>>> STREAM URL(videohut) >>>> ' + str(stream_url)
+    return stream_url
+    
 def resolve_dailymotion(url):
     stream_url='http://www.dailymotion.com/embed/video/' + str(getVideoID(url))
     stream_url = urlresolver.resolve(stream_url)
-    print '>>>>> STREAM URL >>>> ' + stream_url
+    print '>>>>> STREAM URL(dailymotion) >>>> ' + str(stream_url)
     return stream_url
     
 def resolve_playwire(url):
@@ -222,6 +261,7 @@ def resolve_playwire(url):
     #    stream_url = dataconfig.replace('player.json','manifest.f4m')
     #    print 'MANIFEST URL >>>>>>>>>>>> ' + stream_url
     stream_url = 'http://config.playwire.com/12376/videos/v2/'+str(getVideoID(url))+'/manifest.f4m'
+    #stream_url = 'http://config.playwire.com/18875/videos/v2/'+str(getVideoID(url))+'/manifest.f4m'
     link = main.OPENURL(stream_url)
     import xml.etree.ElementTree as ET
     print link
