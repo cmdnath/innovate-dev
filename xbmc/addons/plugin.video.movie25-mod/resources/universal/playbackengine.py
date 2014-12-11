@@ -417,7 +417,7 @@ def PlayInPL(title, url='', img='', fanart='', infolabels=None):
     if url=='' or not url:
         item_url = sys.argv[0]+sys.argv[2]+'&queued=true'
         
-    playlist.add(url=item_url, listitem=listitem)
+    playlist.add(url=str(item_url), listitem=listitem)
     Player().play(playlist)
 
 def PlayAllInPL(title, url='', img='', fanart='', infolabels=None):  

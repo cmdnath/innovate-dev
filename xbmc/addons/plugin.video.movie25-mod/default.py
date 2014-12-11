@@ -27,10 +27,13 @@ TempPath=os.path.join(main.datapath,'Temp')
 try: os.makedirs(TempPath)
 except: pass
 
+#mainurl = 'http://www.movie25.so/movies/'
+mainurl = 'http://www.movie25.cm/'
+
 def AtoZ(index):
-    main.addDir('0-9','http://www.movie25.so/movies/0-9/',1,art+'/09.png')
+    main.addDir('0-9',mainurl + '0-9/',1,art+'/09.png')
     for i in string.ascii_uppercase:
-            main.addDir(i,'http://www.movie25.so/movies/'+i.lower()+'/',1,art+'/'+i.lower()+'.png')
+            main.addDir(i,mainurl+i.lower()+'/',1,art+'/'+i.lower()+'.png')
 
 def MAIN():
     xbmcgui.Window(10000).clearProperty('MASH_SSR_TYPE')
@@ -38,58 +41,58 @@ def MAIN():
     for index, value in sorted(enumerate(d), key=lambda x:x[1]):
         if value==None: continue
         if index==0:
-            main.addDirHome('Search','http://www.movie25.so/',420,art+'/search2.png')
+            main.addDirHome('Search',mainurl,420,art+'/search2.png')
         elif index==1:
-            main.addDirHome("All Fav's",'http://www.movie25.so/',639,art+'/favsu.png')
+            main.addDirHome("All Fav's",mainurl,639,art+'/favsu.png')
         elif index==2:
-            main.addDirHome('A-Z','http://www.movie25.so/',6,art+'/az2.png')
+            main.addDirHome('A-Z',mainurl,6,art+'/az2.png')
         elif index==3:
-            main.addDirHome('New Releases','http://www.movie25.so/movies/new-releases/',1,art+'/new2.png')
+            main.addDirHome('New Releases',mainurl + 'new-releases/',1,art+'/new2.png')
         elif index==4:
-            main.addDirHome('Latest Added','http://www.movie25.so/movies/latest-added/',1,art+'/latest2.png')
+            main.addDirHome('Latest Added',mainurl + 'latest-added/',1,art+'/latest2.png')
         elif index==5:
-            main.addDirHome('Featured Movies','http://www.movie25.so/movies/featured-movies/',1,art+'/feat2.png')
+            main.addDirHome('Featured Movies',mainurl + 'featured-movies/',1,art+'/feat2.png')
         elif index==6:
-            main.addDirHome('Most Viewed','http://www.movie25.so/movies/most-viewed/',1,art+'/view2.png')
+            main.addDirHome('Most Viewed',mainurl + 'most-viewed/',1,art+'/view2.png')
         elif index==7:
-            main.addDirHome('Most Voted','http://www.movie25.so/movies/most-voted/',1,art+'/vote2.png')
+            main.addDirHome('Most Voted',mainurl + 'most-voted/',1,art+'/vote2.png')
         elif index==8:
-            main.addDirHome('HD Releases','http://www.movie25.so/movies/latest-hd-movies/',1,art+'/dvd2hd.png')
+            main.addDirHome('HD Releases',mainurl + 'latest-hd-movies/',1,art+'/dvd2hd.png')
         elif index==9:
-            main.addDirHome('Genre','http://www.movie25.so/',2,art+'/genre2.png')
+            main.addDirHome('Genre',mainurl,2,art+'/genre2.png')
         elif index==10:
-            main.addDirHome('By Year','http://www.movie25.so/',7,art+'/year2.png')
+            main.addDirHome('By Year',mainurl,7,art+'/year2.png')
         elif index==11:
             main.addDirHome('Watch History','history',222,art+'/whistory.png')
         elif index==14:
             main.addDirHome('International','http://www.desirulez.net',36,art+'/intl.png')
         elif index==22:
-            main.addDirHome('Kids Zone','http://www.movie25.so/',76,art+'/kidzone2.png')
-    main.addPlayc('MashUp Settings','http://www.movie25.so/',1999,art+'/MashSettings.png','','','','','')
+            main.addDirHome('Kids Zone',mainurl,76,art+'/kidzone2.png')
+    main.addPlayc('MashUp Settings',mainurl,1999,art+'/MashSettings.png','','','','','')
     
 def GENRE(url,index=False):
-    main.addDir('Action','http://www.movie25.so/movies/action/',1,art+'/act.png',index=index)
-    main.addDir('Adventure','http://www.movie25.so/movies/adventure/',1,art+'/adv.png',index=index)
-    main.addDir('Animation','http://www.movie25.so/movies/animation/',1,art+'/ani.png',index=index)
-    main.addDir('Biography','http://www.movie25.so/movies/biography/',1,art+'/bio.png',index=index)
-    main.addDir('Comedy','http://www.movie25.so/movies/comedy/',1,art+'/com.png',index=index)
-    main.addDir('Crime','http://www.movie25.so/movies/crime/',1,art+'/cri.png',index=index)
-    main.addDir('Documentary','http://www.movie25.so/movies/documentary/',1,art+'/doc.png',index=index)
-    main.addDir('Drama','http://www.movie25.so/movies/drama/',1,art+'/dra.png',index=index)
-    main.addDir('Family','http://www.movie25.so/movies/family/',1,art+'/fam.png',index=index)
-    main.addDir('Fantasy','http://www.movie25.so/movies/fantasy/',1,art+'/fant.png',index=index)
-    main.addDir('History','http://www.movie25.so/movies/history/',1,art+'/history.png',index=index)
-    main.addDir('Horror','http://www.movie25.so/movies/horror/',1,art+'/hor.png',index=index)
-    main.addDir('Music','http://www.movie25.so/movies/music/',1,art+'/mus.png',index=index)
-    main.addDir('Musical','http://www.movie25.so/movies/musical/',1,art+'/mucl.png',index=index)
-    main.addDir('Mystery','http://www.movie25.so/movies/mystery/',1,art+'/mys.png',index=index)
-    main.addDir('Romance','http://www.movie25.so/movies/romance/',1,art+'/rom.png',index=index)
-    main.addDir('Sci-Fi','http://www.movie25.so/movies/sci-fi/',1,art+'/sci.png',index=index)
-    main.addDir('Short','http://www.movie25.so/movies/short/',1,art+'/sho.png',index=index)
-    main.addDir('Sport','http://www.movie25.so/movies/sport/',1,art+'/spo.png',index=index)
-    main.addDir('Thriller','http://www.movie25.so/movies/thriller/',1,art+'/thr.png',index=index)
-    main.addDir('War','http://www.movie25.so/movies/war/',1,art+'/war.png',index=index)
-    main.addDir('Western','http://www.movie25.so/movies/western/',1,art+'/west.png',index=index)
+    main.addDir('Action',mainurl + 'action/',1,art+'/act.png',index=index)
+    main.addDir('Adventure',mainurl + 'adventure/',1,art+'/adv.png',index=index)
+    main.addDir('Animation',mainurl + 'animation/',1,art+'/ani.png',index=index)
+    main.addDir('Biography',mainurl + 'biography/',1,art+'/bio.png',index=index)
+    main.addDir('Comedy',mainurl + 'comedy/',1,art+'/com.png',index=index)
+    main.addDir('Crime',mainurl + 'crime/',1,art+'/cri.png',index=index)
+    main.addDir('Documentary',mainurl + 'documentary/',1,art+'/doc.png',index=index)
+    main.addDir('Drama',mainurl + 'drama/',1,art+'/dra.png',index=index)
+    main.addDir('Family',mainurl + 'family/',1,art+'/fam.png',index=index)
+    main.addDir('Fantasy',mainurl + 'fantasy/',1,art+'/fant.png',index=index)
+    main.addDir('History',mainurl + 'history/',1,art+'/history.png',index=index)
+    main.addDir('Horror',mainurl + 'horror/',1,art+'/hor.png',index=index)
+    main.addDir('Music',mainurl + 'music/',1,art+'/mus.png',index=index)
+    main.addDir('Musical',mainurl + 'musical/',1,art+'/mucl.png',index=index)
+    main.addDir('Mystery',mainurl + 'mystery/',1,art+'/mys.png',index=index)
+    main.addDir('Romance',mainurl + 'romance/',1,art+'/rom.png',index=index)
+    main.addDir('Sci-Fi',mainurl + 'sci-fi/',1,art+'/sci.png',index=index)
+    main.addDir('Short',mainurl + 'short/',1,art+'/sho.png',index=index)
+    main.addDir('Sport',mainurl + 'sport/',1,art+'/spo.png',index=index)
+    main.addDir('Thriller',mainurl + 'thriller/',1,art+'/thr.png',index=index)
+    main.addDir('War',mainurl + 'war/',1,art+'/war.png',index=index)
+    main.addDir('Western',mainurl + 'western/',1,art+'/west.png',index=index)
     main.VIEWSB()
         
 def YEAR(index=False):

@@ -9,7 +9,7 @@ addon_id = settings.getAddOnID()
 
 selfAddon = xbmcaddon.Addon(id=addon_id)
 art = main.art
-MainUrl='http://www.movie25.so'
+MainUrl='http://www.movie25.cm'
 prettyName='Movie25'
 
 def LISTMOVIES(murl,index=False):
