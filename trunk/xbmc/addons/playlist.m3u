@@ -1,0 +1,27 @@
+#EXTM3U
+
+
+
+#EXTINF:-1, [COLOR yellow]Updated 17/12/14 @ 11:50 [/COLOR]  
+http://www.youtube.com/user/hmemar22
+
+#EXTINF:-1, [COLOR green] --General Live Tv--[/COLOR]  
+http://www.youtube.com/user/hmemar22
+
+
+#EXTINF:-1, [COLOR green] --Uk Live Tv--[/COLOR]  
+http://www.youtube.com/user/hmemar22
+
+
+#EXTINF:-1 tvg-logo="BBCNews.png" group-title="UK Live TV", BBC News
+http://wpc.c1a9.edgecastcdn.net/hls-live/20C1A9/bbc_world/ls_satlink/b_828.m3u8?Vd?u#bt!25
+
+#EXTINF:-1 tvg-logo="BBCOne.png" group-title="UK Live TV", BBC 1 ( Uk Only )
+http://vs-hds-uk-live.bbcfmt.vo.llnwd.net/pool_5/live/bbc_one_london/bbc_one_london.isml/bbc_one_london-audio_2=96000-video=1374000.m3u8?Vd?u#bt!25
+
+
+#EXTINF:-1 tvg-logo="BBCOne.png" group-title="UK Live TV", BBC 1
+http://198.179.30.109/live/14.high.stream/playlist.m3u8?id=0ad5aac39bb13fbe42f5a31e7dab24e1bfc18b42c898393db15f844c90a9bc592b36c26f16bed61544f039b964cd116269231b0089ca6b4c9405cc8efcd2bb28640952623d20df3e62e6077e8102075d15e058dc1643b1fbe0c2287e3e4963a9ea5818857fb85bda6c6bf706385480fb041f6d14dda410576379f3101d5f10b9e46154774210ba3ecd059783405edc5f822a96a7e5439fde
+
+#EXTINF:-1, [COLOR yellow]9X M [/COLOR]
+http://46.249.213.93/iPhone/broadcast/9xmtashan-tablet.3gp.m3u8
