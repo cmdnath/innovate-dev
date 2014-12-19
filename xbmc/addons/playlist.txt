@@ -1,3 +1,0 @@
-#EXTM3U
-#EXTINF:-1, [COLOR yellow]9X M [/COLOR]
-http://46.249.213.93/iPhone/broadcast/9xmtashan-tablet.3gp.m3u8
