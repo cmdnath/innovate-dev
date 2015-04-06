@@ -23,8 +23,8 @@ mainurl = settings.getMovie25URL()
 sominalurl = settings.getSominalURL()
 desirulezurl = settings.getDesiRulezURL()
 
-dialog = xbmcgui.Dialog()
-ok=dialog.ok('[B][COLOR=red]Aftershock Repository Moved[/COLOR][/B]','To continue receiving updates please install the new repository from [B][COLOR=red]System->Settings->Add-ons->Get Add-ons->Innovate Addons->Add-on repository->Aftershock addons[/COLOR][/B]')
+#dialog = xbmcgui.Dialog()
+#ok=dialog.ok('[B][COLOR=red]Aftershock Repository Moved[/COLOR][/B]','To continue receiving updates please install the new repository from [B][COLOR=red]System->Settings->Add-ons->Get Add-ons->Innovate Addons->Add-on repository->Aftershock addons[/COLOR][/B]')
 
 def MAIN():
     xbmcgui.Window(10000).clearProperty('AFTERSHOCK_SSR_TYPE')
