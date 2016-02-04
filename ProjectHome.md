@@ -1,0 +1,1 @@
+This project contains development that i have done in spare time as a hobby on various platforms.
